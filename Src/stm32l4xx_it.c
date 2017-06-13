@@ -64,7 +64,12 @@
 #include "stm32l4xx_ll_usart.h"
 #include "stm32l4xx_ll_wwdg.h"
 /* USER CODE END 0 */
-
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
+#include "queue.h"
+#include "semphr.h"
+#include "event_groups.h"
 /* External variables --------------------------------------------------------*/
 
 /******************************************************************************/
@@ -161,13 +166,19 @@ void DebugMon_Handler(void)
     /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
+extern SemaphoreHandle_t xQSPI_DMA_TC;
 
 void DMA2_Channel7_IRQHandler(void)
 {
+    static BaseType_t xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+
     if(LL_DMA_IsActiveFlag_TC7(DMA2) && LL_DMA_IsEnabledIT_TC(DMA2, LL_DMA_CHANNEL_7))
     {
         LL_DMA_ClearFlag_TC7(DMA2);
-			  LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
+        LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
+        xSemaphoreGiveFromISR( xQSPI_DMA_TC, &xHigherPriorityTaskWoken );
+
         /* 此处执行中断回传. */
     }
     if(LL_DMA_IsActiveFlag_HT7(DMA2) && LL_DMA_IsEnabledIT_HT(DMA2, LL_DMA_CHANNEL_7))
@@ -178,9 +189,11 @@ void DMA2_Channel7_IRQHandler(void)
     if(LL_DMA_IsActiveFlag_TE7(DMA2) && LL_DMA_IsEnabledIT_TE(DMA2, LL_DMA_CHANNEL_7))
     {
         LL_DMA_ClearFlag_TE7(DMA2);
-			  LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
+        LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
         /* 此处执行中断回传. */
     }
+
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 
 }
 /******************************************************************************/

@@ -226,11 +226,15 @@ static void QSPI_WriteEnable()
     QSPI_AutoPolling(&sCommand, &sConfig);
 }
 
+
+SemaphoreHandle_t xQSPI_DMA_TC;
+
 void StartDefaultTask(void const *argument)
 {
     QSPI_CommandTypeDef sCommand;
 
-    QSPI_MspInit(4, 1, QSPI_SAMPLE_SHIFTING_NONE, 23, QSPI_CS_HIGH_TIME_1_CYCLE, QSPI_CLOCK_MODE_0);
+    QSPI_MspInit(4, 0, QSPI_SAMPLE_SHIFTING_NONE, 23, QSPI_CS_HIGH_TIME_1_CYCLE, QSPI_CLOCK_MODE_0);
+    xQSPI_DMA_TC = xSemaphoreCreateBinary();
 
     sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
     sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
@@ -270,8 +274,9 @@ void StartDefaultTask(void const *argument)
 
         QSPI_Command(&sCommand);
 
-        QSPI_Transmit(aTxBuffer);
-
+        QSPI_Transmit_DMA(aTxBuffer);
+        xSemaphoreTake( xQSPI_DMA_TC, ( TickType_t ) 5000 );
+        vTaskDelay(100);
 
         QSPI_AutoPollingMemReady();
 
@@ -279,8 +284,9 @@ void StartDefaultTask(void const *argument)
         sCommand.DummyCycles = DUMMY_CLOCK_CYCLES_READ_QUAD;
 
         QSPI_Command(&sCommand);
-        QSPI_Receive_DMA(aRxBuffer);
 
+        QSPI_Receive_DMA(aRxBuffer);
+        xSemaphoreTake( xQSPI_DMA_TC, ( TickType_t ) 5000 );
 
         vTaskDelay(1000);
     }
