@@ -335,7 +335,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>STM32L476xx,USE_FULL_LL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32L4xx_LL_Driver/Inc;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include;..\Drivers\Components\OnChip\Inc</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32L4xx_LL_Driver/Inc;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Drivers/CMSIS/Device/ST/STM32L4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include;..\Drivers\Components\OnChip\Inc;..\Drivers\Components\OnBoard\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>

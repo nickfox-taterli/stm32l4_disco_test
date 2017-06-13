@@ -5,3 +5,4 @@ Desktop.ini
 MDK-ARM/
 !MDK-ARM/RTOS_Hello.uvprojx
 !MDK-ARM/startup_stm32l476xx.s
+.TMP

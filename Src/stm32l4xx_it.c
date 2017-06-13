@@ -166,8 +166,6 @@ void DebugMon_Handler(void)
     /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
-extern SemaphoreHandle_t xQSPI_DMA_TC;
-
 void DMA2_Channel7_IRQHandler(void)
 {
     static BaseType_t xHigherPriorityTaskWoken;
@@ -177,7 +175,6 @@ void DMA2_Channel7_IRQHandler(void)
     {
         LL_DMA_ClearFlag_TC7(DMA2);
         LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
-        xSemaphoreGiveFromISR( xQSPI_DMA_TC, &xHigherPriorityTaskWoken );
 
         /* 此处执行中断回传. */
     }
