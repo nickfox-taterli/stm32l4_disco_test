@@ -38,6 +38,73 @@
 
 #include "QSPI.h"
 
+/* N25Q128A13EF840E Micron memory */
+/* Size of the flash */
+#define QSPI_FLASH_SIZE                      23
+#define QSPI_PAGE_SIZE                       256
+
+/* Reset Operations */
+#define RESET_ENABLE_CMD                     0x66
+#define RESET_MEMORY_CMD                     0x99
+
+/* Identification Operations */
+#define READ_ID_CMD                          0x9E
+#define READ_ID_CMD2                         0x9F
+#define MULTIPLE_IO_READ_ID_CMD              0xAF
+#define READ_SERIAL_FLASH_DISCO_PARAM_CMD    0x5A
+
+/* Read Operations */
+#define READ_CMD                             0x03
+#define FAST_READ_CMD                        0x0B
+#define DUAL_OUT_FAST_READ_CMD               0x3B
+#define DUAL_INOUT_FAST_READ_CMD             0xBB
+#define QUAD_OUT_FAST_READ_CMD               0x6B
+#define QUAD_INOUT_FAST_READ_CMD             0xEB
+
+/* Write Operations */
+#define WRITE_ENABLE_CMD                     0x06
+#define WRITE_DISABLE_CMD                    0x04
+
+/* Register Operations */
+#define READ_STATUS_REG_CMD                  0x05
+#define WRITE_STATUS_REG_CMD                 0x01
+
+#define READ_LOCK_REG_CMD                    0xE8
+#define WRITE_LOCK_REG_CMD                   0xE5
+
+#define READ_FLAG_STATUS_REG_CMD             0x70
+#define CLEAR_FLAG_STATUS_REG_CMD            0x50
+
+#define READ_NONVOL_CFG_REG_CMD              0xB5
+#define WRITE_NONVOL_CFG_REG_CMD             0xB1
+
+#define READ_VOL_CFG_REG_CMD                 0x85
+#define WRITE_VOL_CFG_REG_CMD                0x81
+
+#define READ_ENHANCED_VOL_CFG_REG_CMD        0x65
+#define WRITE_ENHANCED_VOL_CFG_REG_CMD       0x61
+
+/* Program Operations */
+#define PAGE_PROG_CMD                        0x02
+#define DUAL_IN_FAST_PROG_CMD                0xA2
+#define EXT_DUAL_IN_FAST_PROG_CMD            0xD2
+#define QUAD_IN_FAST_PROG_CMD                0x32
+#define EXT_QUAD_IN_FAST_PROG_CMD            0x12
+
+/* Erase Operations */
+#define SUBSECTOR_ERASE_CMD                  0x20
+#define SECTOR_ERASE_CMD                     0xD8
+#define BULK_ERASE_CMD                       0xC7
+#define PROG_ERASE_RESUME_CMD                0x7A
+#define PROG_ERASE_SUSPEND_CMD               0x75
+
+/* One-Time Programmable Operations */
+#define READ_OTP_ARRAY_CMD                   0x4B
+#define PROG_OTP_ARRAY_CMD                   0x42
+
+/* Default dummy clocks cycles */
+#define DUMMY_CLOCK_CYCLES_READ              8
+#define DUMMY_CLOCK_CYCLES_READ_QUAD         10
 
 void SystemClock_Config(void)
 {
@@ -93,6 +160,14 @@ void SystemClock_Config(void)
     NVIC_SetPriority(SysTick_IRQn, 0x0F);
 }
 
+/* Buffer used for tx */
+uint8_t aTxBuffer[0x100];
+/* Buffer used for rx */
+uint8_t aRxBuffer[0x100];
+/* Buffer fill pointer */
+uint16_t i = 0;
+/* Buffer index pointer */
+uint16_t v = 0;
 
 static void QSPI_AutoPollingMemReady()
 {
@@ -101,7 +176,7 @@ static void QSPI_AutoPollingMemReady()
 
     /* Configure automatic polling mode to wait for memory ready ------ */
     sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-    sCommand.Instruction       = 0x05;
+    sCommand.Instruction       = READ_STATUS_REG_CMD;
     sCommand.AddressMode       = QSPI_ADDRESS_NONE;
     sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
     sCommand.DataMode          = QSPI_DATA_1_LINE;
@@ -120,95 +195,94 @@ static void QSPI_AutoPollingMemReady()
     QSPI_AutoPolling(&sCommand, &sConfig);
 }
 
-QSPI_CommandTypeDef s_command;
-QSPI_MemoryMappedTypeDef sMemMappedCfg;
-uint8_t wData[0x100];
-uint8_t rData[0x100];
-uint32_t i;
+static void QSPI_WriteEnable()
+{
+    QSPI_CommandTypeDef     sCommand;
+    QSPI_AutoPollingTypeDef sConfig;
+
+    /* Enable write operations ------------------------------------------ */
+    sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+    sCommand.Instruction       = WRITE_ENABLE_CMD;
+    sCommand.AddressMode       = QSPI_ADDRESS_NONE;
+    sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    sCommand.DataMode          = QSPI_DATA_NONE;
+    sCommand.DummyCycles       = 0;
+    sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+    sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+    sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+
+    QSPI_Command(&sCommand);
+    /* Configure automatic polling mode to wait for write enabling ---- */
+    sConfig.Match           = 0x02;
+    sConfig.Mask            = 0x02;
+    sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
+    sConfig.StatusBytesSize = 1;
+    sConfig.Interval        = 0x10;
+    sConfig.AutomaticStop   = QSPI_AUTOMATIC_STOP_ENABLE;
+
+    sCommand.Instruction    = READ_STATUS_REG_CMD;
+    sCommand.DataMode       = QSPI_DATA_1_LINE;
+
+    QSPI_AutoPolling(&sCommand, &sConfig);
+}
 
 void StartDefaultTask(void const *argument)
 {
-    for(i = 0; i < 0x100; i++)
-    {
-        wData[i] =  0xFF - i;
-    }
+    QSPI_CommandTypeDef sCommand;
 
-    QSPI_MspInit(4, 0, QSPI_SAMPLE_SHIFTING_NONE, 23, QSPI_CS_HIGH_TIME_1_CYCLE, QSPI_CLOCK_MODE_0);
+    QSPI_MspInit(4, 1, QSPI_SAMPLE_SHIFTING_NONE, 23, QSPI_CS_HIGH_TIME_1_CYCLE, QSPI_CLOCK_MODE_0);
 
-    s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction       = 0xD8;
-    s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
-    s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
-    s_command.Address           = 0x000000;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DataMode          = QSPI_DATA_NONE;
-    s_command.DummyCycles       = 0;
-    s_command.NbData            = 0;
-    s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
-    s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-    s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
+    sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
+    sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
+    sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
+    sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
+    sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
+    sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
-    QSPI_Command(&s_command);
-
-    QSPI_AutoPollingMemReady();
-
-    s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction       = 0x06;
-    s_command.AddressMode       = QSPI_ADDRESS_NONE;
-    s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
-    s_command.Address           = 0x000000;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DataMode          = QSPI_DATA_NONE;
-    s_command.DummyCycles       = 0;
-    s_command.NbData            = 0;
-    s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
-    s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-    s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-
-    QSPI_Command(&s_command);
-
-    s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction       = 0x02;
-    s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
-    s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
-    s_command.Address           = 0x000000;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DataMode          = QSPI_DATA_1_LINE;
-    s_command.DummyCycles       = 0;
-    s_command.NbData            = 0x100;
-    s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
-    s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-    s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-
-    QSPI_Command(&s_command);
-
-    QSPI_Transmit_DMA(wData);
-
-    vTaskDelay(100);
-    QSPI_AutoPollingMemReady();
-
-
-    s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-    s_command.Instruction       = 0x0B;
-    s_command.AddressMode       = QSPI_ADDRESS_1_LINE;
-    s_command.AddressSize       = QSPI_ADDRESS_24_BITS;
-    s_command.Address           = 0x000000;
-    s_command.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
-    s_command.DataMode          = QSPI_DATA_1_LINE;
-    s_command.DummyCycles       = 8;
-    s_command.NbData            = 0x100;
-    s_command.DdrMode           = QSPI_DDR_MODE_DISABLE;
-    s_command.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
-    s_command.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
-
-    QSPI_Command(&s_command);
-
-    QSPI_Receive_DMA(rData);
-    vTaskDelay(100);
-    QSPI_MemoryMapped(&s_command, &sMemMappedCfg);
     for(;;)
     {
-        vTaskDelay(1);
+
+        v++;
+
+        for(i = 0; i < 0x100; i++)
+        {
+            aTxBuffer[i] = v + i;
+            aRxBuffer[i] = 0x00;
+        }
+
+        QSPI_WriteEnable();
+        /* Erasing Sequence -------------------------------------------------- */
+        sCommand.Instruction = SECTOR_ERASE_CMD;
+        sCommand.AddressMode = QSPI_ADDRESS_1_LINE;
+        sCommand.Address     = 0x00000000;
+        sCommand.DataMode    = QSPI_DATA_NONE;
+        sCommand.DummyCycles = 0;
+
+        QSPI_Command(&sCommand);
+
+        QSPI_AutoPollingMemReady();
+        QSPI_WriteEnable();
+
+        sCommand.Instruction = EXT_QUAD_IN_FAST_PROG_CMD;
+        sCommand.AddressMode = QSPI_ADDRESS_4_LINES;
+        sCommand.DataMode    = QSPI_DATA_4_LINES;
+        sCommand.NbData      = 0x100;
+
+        QSPI_Command(&sCommand);
+
+        QSPI_Transmit(aTxBuffer);
+
+
+        QSPI_AutoPollingMemReady();
+
+        sCommand.Instruction = QUAD_INOUT_FAST_READ_CMD;
+        sCommand.DummyCycles = DUMMY_CLOCK_CYCLES_READ_QUAD;
+
+        QSPI_Command(&sCommand);
+        QSPI_Receive_DMA(aRxBuffer);
+
+
+        vTaskDelay(1000);
     }
 }
 
