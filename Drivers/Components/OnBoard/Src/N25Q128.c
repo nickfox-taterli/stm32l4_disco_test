@@ -425,7 +425,7 @@ void BSP_QSPI_EnableMemoryMappedMode(void)
 void BSP_QSPI_RDID(BSP_QSPI_ID_TypeDef *pID)
 {
     QSPI_CommandTypeDef sCommand;
-    uint8_t pData[20];
+    uint8_t *pRxBuffPtr = (uint8_t *)pID;
 
     /* Initialize the erase command */
     sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
@@ -446,14 +446,5 @@ void BSP_QSPI_RDID(BSP_QSPI_ID_TypeDef *pID)
     QSPI_Command(&sCommand);
 
     /* Configure automatic polling mode to wait for end of erase */
-    QSPI_Receive(pData);
-
-    pID->Manufacturer = pData[0];
-    pID->Identification.Type = pData[1];
-    pID->Identification.Capacity = pData[2];
-
-    pID->UID[0] = (pData[4] << 24) | (pData[5] << 16) | (pData[6] << 8) | pData[7];
-    pID->UID[1] = (pData[8] << 24) | (pData[9] << 16) | (pData[10] << 8) | pData[11];
-    pID->UID[2] = (pData[12] << 24) | (pData[13] << 16) | (pData[14] << 8) | pData[15];
-    pID->UID[3] = (pData[16] << 24) | (pData[17] << 16) | (pData[18] << 8) | pData[19];
+    QSPI_Receive(pRxBuffPtr);
 }

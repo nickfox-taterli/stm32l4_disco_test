@@ -175,6 +175,7 @@ typedef struct
 {
 		uint8_t Manufacturer;
 		BSP_QSPI_ID_Identification Identification;
+		uint8_t ID_Length;
 		uint32_t UID[4];
 } BSP_QSPI_ID_TypeDef;
 

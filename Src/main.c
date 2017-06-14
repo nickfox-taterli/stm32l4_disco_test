@@ -37,7 +37,10 @@
 #include "event_groups.h"
 
 #include "QSPI.h"
+#include "I2C1.h"
+
 #include "N25Q128.h"
+#include "CS43L22.h"
 
 void SystemClock_Config(void)
 {
@@ -52,6 +55,7 @@ void SystemClock_Config(void)
 
     LL_RCC_MSI_Enable();
 
+    /* Wait till MSI is ready */
     while(LL_RCC_MSI_IsReady() != 1)
     {
 
@@ -68,6 +72,7 @@ void SystemClock_Config(void)
 
     LL_RCC_PLL_Enable();
 
+    /* Wait till PLL is ready */
     while(LL_RCC_PLL_IsReady() != 1)
     {
 
@@ -80,6 +85,7 @@ void SystemClock_Config(void)
 
     LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
 
+    /* Wait till System clock is ready */
     while(LL_RCC_GetSysClkSource() != LL_RCC_SYS_CLKSOURCE_STATUS_PLL)
     {
 
@@ -90,42 +96,27 @@ void SystemClock_Config(void)
 
     LL_SetSystemCoreClock(80000000);
 
+    LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
+
+    /* SysTick_IRQn interrupt configuration */
     NVIC_SetPriority(SysTick_IRQn, 0x0F);
 }
 
-/* Buffer used for tx */
-uint8_t aTxBuffer[0x100];
-/* Buffer used for rx */
-uint8_t aRxBuffer[0x100];
-/* Buffer fill pointer */
-uint16_t i = 0;
-/* Buffer index pointer */
-uint16_t v = 0;
-
 BSP_QSPI_ID_TypeDef pID;
+uint8_t cs43l22_id;
 
 
 void StartDefaultTask(void)
 {
+    I2C1_Init();
+
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
+    CS43L22_Init(80);
 
     for(;;)
     {
-
-        v++;
-
-        for(i = 0; i < 0x100; i++)
-        {
-            aTxBuffer[i] = v + i;
-            aRxBuffer[i] = 0xAA;
-        }
-
-        BSP_QSPI_Erase_Block(0x00000000);
-        BSP_QSPI_Write(aTxBuffer, 0x00000000, 0x100);
-        BSP_QSPI_Read(aRxBuffer, 0x00000000, 0x100);
-
-        vTaskDelay(1000);
+        vTaskDelay(10);
     }
 }
 

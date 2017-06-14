@@ -582,6 +582,16 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>Drivers/STM32L4xx_OnBoard_Driver</GroupName>
+          <Files>
+            <File>
+              <FileName>N25Q128.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Components\OnBoard\Src\N25Q128.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
