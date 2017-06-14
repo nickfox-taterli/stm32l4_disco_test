@@ -183,10 +183,10 @@
 void		 CS43L22_Init(uint8_t Volume);
 void 		 CS43L22_SetVolume(uint8_t Volume);
 uint32_t CS43L22_ReadID(void);
-void CS43L22_Play(uint16_t *pBuffer, uint16_t Size);
-void CS43L22_Pause(void);
-void CS43L22_Resume(void);
-void CS43L22_Stop(void);
-void CS43L22_SetMute(uint32_t Cmd);
+void 		 CS43L22_Play(uint16_t *pBuffer, uint16_t Size);
+void 		 CS43L22_Pause(void);
+void 		 CS43L22_Resume(void);
+void 		 CS43L22_Stop(void);
+void 		 CS43L22_SetMute(uint32_t Cmd);
 
 #endif /* __CS43L22_H */

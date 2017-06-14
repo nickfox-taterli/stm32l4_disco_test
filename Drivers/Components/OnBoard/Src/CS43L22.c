@@ -72,7 +72,7 @@ void CS43L22_Init(uint8_t Volume)
   * @brief Sets higher or lower the codec volume level.
   * @param Volume: a byte value from 0 to 255 (refer to codec registers
   *         description for more details).
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_SetVolume(uint8_t Volume)
 {
@@ -110,7 +110,7 @@ uint32_t CS43L22_ReadID(void)
 /**
   * @brief Start the audio Codec play feature.
   * @note For this codec no Play options are required.
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_Play(uint16_t *pBuffer, uint16_t Size)
 {
@@ -132,7 +132,7 @@ void CS43L22_Play(uint16_t *pBuffer, uint16_t Size)
 
 /**
   * @brief Pauses playing on the audio codec.
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_Pause(void)
 {
@@ -149,7 +149,7 @@ void CS43L22_Pause(void)
 
 /**
   * @brief Resumes playing on the audio codec.
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_Resume(void)
 {
@@ -174,7 +174,7 @@ void CS43L22_Resume(void)
   *                           mode, the codec is set to default configuration
   *                           (user should re-Initialize the codec in order to
   *                            play again the audio stream).
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_Stop(void)
 {
@@ -195,7 +195,7 @@ void CS43L22_Stop(void)
   * @brief Enables or disables the mute feature on the audio codec.
   * @param Cmd: AUDIO_MUTE_ON to enable the mute or AUDIO_MUTE_OFF to disable the
   *             mute mode.
-  * @retval 0 if correct communication, else wrong communication
+  * @retval None
   */
 void CS43L22_SetMute(uint32_t Cmd)
 {
