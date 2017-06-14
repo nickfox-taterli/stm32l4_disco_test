@@ -1,4 +1,4 @@
-# STM32L476 DISCO QSPI 例程
+# STM32L476 DISCO 测试
 
 ------
 
