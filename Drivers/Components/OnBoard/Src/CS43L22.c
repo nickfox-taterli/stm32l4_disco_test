@@ -199,11 +199,8 @@ void CS43L22_Stop(void)
     /* Power down the DAC and the speaker (PMDAC and PMSPK bits)*/
     I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x9F);
 
-    LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
-
-    SAI1_Block_A->CR1 &= ~SAI_xCR1_SAIEN;
-    SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
-
+		SAI1_Stop();
+	
     Is_CS43L22_Stop = 1;
 
 

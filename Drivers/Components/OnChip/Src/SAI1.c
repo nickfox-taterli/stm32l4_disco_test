@@ -165,3 +165,10 @@ void SAI1_Play(uint8_t *pData,
 
 
 }
+
+void SAI1_Stop(void){
+    LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
+
+    SAI1_Block_A->CR1 &= ~SAI_xCR1_SAIEN;
+    SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
+}
