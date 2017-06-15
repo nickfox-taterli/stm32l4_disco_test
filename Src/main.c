@@ -118,7 +118,7 @@ void SystemClock_Config(void)
 
 
 #define AUDIO_FILE_ADDRESS   0x90000000
-#define AUDIO_FILE_SIZE      (6144 *1024)
+#define AUDIO_FILE_SIZE      7176532U
 #define PLAY_BUFF_SIZE       4096
 
 BSP_QSPI_ID_TypeDef pID;
@@ -126,7 +126,6 @@ uint8_t cs43l22_id;
 uint16_t PlayBuff[4096];
 __IO int32_t UpdatePointer = -1;
 uint32_t PlaybackPosition = PLAY_BUFF_SIZE;
-
 
 void DMA2_Channel1_IRQHandler(void)
 {
@@ -158,11 +157,9 @@ void StartDefaultTask(void)
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
     BSP_QSPI_EnableMemoryMappedMode();
-    cs43l22_id = CS43L22_Init(80);
+    cs43l22_id = CS43L22_Init(70);
     SAI1_MspInit((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_8K);
     CS43L22_Play(4096);
-
-
     for(;;)
     {
         /* Wait a callback event */

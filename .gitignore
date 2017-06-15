@@ -3,6 +3,6 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 MDK-ARM/
-!MDK-ARM/RTOS_Hello.uvprojx
+!MDK-ARM/STM32L476-DISCO.uvprojx
 !MDK-ARM/startup_stm32l476xx.s
 .TMP
