@@ -10,7 +10,7 @@
 
 static uint8_t Is_CS43L22_Stop = 1;
 
-void CS43L22_Init(uint8_t Volume)
+uint8_t CS43L22_Init(uint8_t Volume)
 {
     LL_GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -31,7 +31,6 @@ void CS43L22_Init(uint8_t Volume)
     vTaskDelay(5);
     LL_GPIO_SetOutputPin(GPIOE, LL_GPIO_PIN_3);
     vTaskDelay(5);
-
 
     /* Keep Codec powered OFF */
     I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x01);
@@ -66,6 +65,8 @@ void CS43L22_Init(uint8_t Volume)
     /* Adjust PCM volume level */
     I2C1_Master_Write(0x94, CS43L22_REG_PCMA_VOL, 0x0A);
     I2C1_Master_Write(0x94, CS43L22_REG_PCMB_VOL, 0x0A);
+		
+		return CS43L22_ReadID();
 }
 
 /**
@@ -96,7 +97,7 @@ void CS43L22_SetVolume(uint8_t Volume)
   * @brief  Get the CS43L22 ID.
   * @retval The CS43L22 ID
   */
-uint32_t CS43L22_ReadID(void)
+uint8_t CS43L22_ReadID(void)
 {
     uint8_t Value;
 
@@ -112,7 +113,7 @@ uint32_t CS43L22_ReadID(void)
   * @note For this codec no Play options are required.
   * @retval None
   */
-void CS43L22_Play(uint16_t *pBuffer, uint16_t Size)
+void CS43L22_Play(uint16_t Size)
 {
 
     if(Is_CS43L22_Stop == 1)

@@ -38,6 +38,7 @@
 
 #include "QSPI.h"
 #include "I2C1.h"
+#include "SAI1.h"
 
 #include "N25Q128.h"
 #include "CS43L22.h"
@@ -77,6 +78,17 @@ void SystemClock_Config(void)
     {
 
     }
+    LL_RCC_PLLSAI1_ConfigDomain_SAI(LL_RCC_PLLSOURCE_MSI, LL_RCC_PLLM_DIV_1, 86, LL_RCC_PLLSAI1P_DIV_7);
+
+    LL_RCC_PLLSAI1_EnableDomain_SAI();
+
+    LL_RCC_PLLSAI1_Enable();
+
+    /* Wait till PLLSAI1 is ready */
+    while(LL_RCC_PLLSAI1_IsReady() != 1)
+    {
+
+    }
     LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 
     LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
@@ -98,13 +110,46 @@ void SystemClock_Config(void)
 
     LL_RCC_SetI2CClockSource(LL_RCC_I2C1_CLKSOURCE_PCLK1);
 
+    LL_RCC_SetSAIClockSource(LL_RCC_SAI1_CLKSOURCE_PLLSAI1);
+
     /* SysTick_IRQn interrupt configuration */
     NVIC_SetPriority(SysTick_IRQn, 0x0F);
 }
 
+
+#define AUDIO_FILE_ADDRESS   0x90000000
+#define AUDIO_FILE_SIZE      (6144 *1024)
+#define PLAY_BUFF_SIZE       4096
+
 BSP_QSPI_ID_TypeDef pID;
 uint8_t cs43l22_id;
+uint16_t PlayBuff[4096];
+__IO int32_t UpdatePointer = -1;
+uint32_t PlaybackPosition = PLAY_BUFF_SIZE;
 
+
+void DMA2_Channel1_IRQHandler(void)
+{
+    if(LL_DMA_IsActiveFlag_TC1(DMA2))
+    {
+        LL_DMA_ClearFlag_TC1(DMA2);
+        UpdatePointer = PLAY_BUFF_SIZE / 2;
+        /* Call function Transmission complete Callback */ /* 传输完剩下一半,这时候可以填充后面的数据. */
+
+    }
+    if(LL_DMA_IsActiveFlag_HT1(DMA2))
+    {
+        LL_DMA_ClearFlag_HT1(DMA2);
+        UpdatePointer = 0;
+        /* Call function Transmission complete Callback */ /* 传输完前面一半,这时候可以填充前面的数据. */
+    }
+    else if(LL_DMA_IsActiveFlag_TE1(DMA2))
+    {
+        /* Call Error function */
+    }
+
+    LL_DMA_ClearFlag_GI1(DMA2);
+}
 
 void StartDefaultTask(void)
 {
@@ -112,11 +157,37 @@ void StartDefaultTask(void)
 
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
-    CS43L22_Init(80);
+    BSP_QSPI_EnableMemoryMappedMode();
+    cs43l22_id = CS43L22_Init(80);
+    SAI1_MspInit((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_8K);
+    CS43L22_Play(4096);
+
 
     for(;;)
     {
-        vTaskDelay(10);
+        /* Wait a callback event */
+        while(UpdatePointer == -1);
+
+        int position = UpdatePointer;
+        UpdatePointer = -1;
+
+        /* Upate the first or the second part of the buffer */
+        for(int i = 0; i < PLAY_BUFF_SIZE / 2; i++)
+        {
+            PlayBuff[i + position] = *(uint16_t *)(AUDIO_FILE_ADDRESS + PlaybackPosition);
+            PlaybackPosition += 2;
+        }
+
+        /* check the end of the file */
+        if((PlaybackPosition + PLAY_BUFF_SIZE / 2) > AUDIO_FILE_SIZE)
+        {
+            PlaybackPosition = 0;
+        }
+
+        if(UpdatePointer != -1)
+        {
+						vTaskDelay(1);/* Error */
+        }
     }
 }
 

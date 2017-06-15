@@ -579,6 +579,16 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\Components\OnChip\Src\QSPI.c</FilePath>
             </File>
+            <File>
+              <FileName>I2C1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Components\OnChip\Src\I2C1.c</FilePath>
+            </File>
+            <File>
+              <FileName>SAI1.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Components\OnChip\Src\SAI1.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -588,6 +598,11 @@
               <FileName>N25Q128.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Drivers\Components\OnBoard\Src\N25Q128.c</FilePath>
+            </File>
+            <File>
+              <FileName>CS43L22.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\Components\OnBoard\Src\CS43L22.c</FilePath>
             </File>
           </Files>
         </Group>
