@@ -1,5 +1,6 @@
 #include "CS43L22.h"
 #include "I2C1.h"
+#include "SAI1.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -14,12 +15,12 @@ uint8_t CS43L22_Init(uint8_t Volume)
 {
     LL_GPIO_InitTypeDef GPIO_InitStruct;
 
+		if(!LL_I2C_IsEnabled(I2C1)){
+			 I2C1_Init();
+		}	
+	
     LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOE);
 
-    /**I2C1 GPIO Configuration
-    PB6   ------> I2C1_SCL
-    PB7   ------> I2C1_SDA
-    */
     GPIO_InitStruct.Pin = LL_GPIO_PIN_3;
     GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
     GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
@@ -65,8 +66,10 @@ uint8_t CS43L22_Init(uint8_t Volume)
     /* Adjust PCM volume level */
     I2C1_Master_Write(0x94, CS43L22_REG_PCMA_VOL, 0x0A);
     I2C1_Master_Write(0x94, CS43L22_REG_PCMB_VOL, 0x0A);
-		
-		return CS43L22_ReadID();
+
+    SAI1_MspInit();
+
+    return CS43L22_ReadID();
 }
 
 /**
@@ -113,11 +116,15 @@ uint8_t CS43L22_ReadID(void)
   * @note For this codec no Play options are required.
   * @retval None
   */
-void CS43L22_Play(uint16_t Size)
+void CS43L22_Play(uint8_t *pData,
+                  uint16_t PlayBufSize,
+                  uint32_t AudioFrequency)
 {
 
     if(Is_CS43L22_Stop == 1)
     {
+
+
         /* Enable the digital soft ramp */
         I2C1_Master_Write(0x94, CS43L22_REG_MISC_CTL, 0x06);
 
@@ -126,6 +133,9 @@ void CS43L22_Play(uint16_t Size)
 
         /* Power on the Codec */
         I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x9E);
+
+        SAI1_Play(pData, PlayBufSize, AudioFrequency);
+
         Is_CS43L22_Stop = 0;
     }
 
@@ -189,7 +199,14 @@ void CS43L22_Stop(void)
     /* Power down the DAC and the speaker (PMDAC and PMSPK bits)*/
     I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x9F);
 
+    LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
+
+    SAI1_Block_A->CR1 &= ~SAI_xCR1_SAIEN;
+    SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
+
     Is_CS43L22_Stop = 1;
+
+
 }
 
 /**

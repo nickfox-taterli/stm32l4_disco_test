@@ -319,6 +319,7 @@
   * @}
   */
 
-void SAI1_MspInit(uint8_t *pData, uint16_t PlayBufSize, uint32_t AudioFrequency);
+void SAI1_MspInit(void);
+void SAI1_Play(uint8_t *pData, uint16_t PlayBufSize, uint32_t AudioFrequency);
 
 #endif

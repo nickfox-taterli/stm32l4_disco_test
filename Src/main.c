@@ -78,17 +78,7 @@ void SystemClock_Config(void)
     {
 
     }
-    LL_RCC_PLLSAI1_ConfigDomain_SAI(LL_RCC_PLLSOURCE_MSI, LL_RCC_PLLM_DIV_1, 86, LL_RCC_PLLSAI1P_DIV_7);
 
-    LL_RCC_PLLSAI1_EnableDomain_SAI();
-
-    LL_RCC_PLLSAI1_Enable();
-
-    /* Wait till PLLSAI1 is ready */
-    while(LL_RCC_PLLSAI1_IsReady() != 1)
-    {
-
-    }
     LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 
     LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
@@ -118,7 +108,7 @@ void SystemClock_Config(void)
 
 
 #define AUDIO_FILE_ADDRESS   0x90000000
-#define AUDIO_FILE_SIZE      7176532U
+#define AUDIO_FILE_SIZE      8388608U
 #define PLAY_BUFF_SIZE       4096
 
 BSP_QSPI_ID_TypeDef pID;
@@ -152,14 +142,11 @@ void DMA2_Channel1_IRQHandler(void)
 
 void StartDefaultTask(void)
 {
-    I2C1_Init();
-
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
     BSP_QSPI_EnableMemoryMappedMode();
     cs43l22_id = CS43L22_Init(70);
-    SAI1_MspInit((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_8K);
-    CS43L22_Play(4096);
+    CS43L22_Play((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_44K);
     for(;;)
     {
         /* Wait a callback event */
