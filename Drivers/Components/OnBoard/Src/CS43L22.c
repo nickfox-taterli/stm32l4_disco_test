@@ -190,7 +190,9 @@ void CS43L22_Resume(void)
   */
 void CS43L22_Stop(void)
 {
-
+		if(Is_CS43L22_Stop == 1)
+			return;
+		
     /* Mute the output first */
     CS43L22_SetMute(AUDIO_MUTE_ON);
 
@@ -200,6 +202,8 @@ void CS43L22_Stop(void)
     /* Power down the DAC and the speaker (PMDAC and PMSPK bits)*/
     I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x9F);
 
+		vTaskDelay(1);
+		
 		SAI1_Stop();
 	
     Is_CS43L22_Stop = 1;

@@ -1,5 +1,6 @@
-#ifndef __DISCO_DFSDM_H
-#define __DISCO_DFSDM_H
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __CLI_AUDIO_PLAY_BACK_H
+#define __CLI_AUDIO_PLAY_BACK_H
 
 /* Includes ------------------------------------------------------------------*/
 /* LL drivers common to all LL examples */
@@ -30,10 +31,17 @@
 #include "stm32l4xx_ll_usart.h"
 #include "stm32l4xx_ll_wwdg.h"
 
-#define SaturaLH(N, L, H) (((N)<(L))?(L):(((N)>(H))?(H):(N)))
+#include "FreeRTOS.h"
+#include "FreeRTOS_CLI.h"
+#include "task.h"
+#include "timers.h"
+#include "queue.h"
+#include "semphr.h"
+#include "event_groups.h"
 
-void DFSDM_Init(void);
-void DFSDM_Play(uint32_t *pData,uint16_t PlayBufSize,uint32_t AudioFrequency);	
-void DFSDM_Stop(void);
+extern SemaphoreHandle_t DmaRecHalfBuffCplt;
+extern SemaphoreHandle_t DmaRecBuffCplt;
+
+void Audio_PlayBack_Init(void);
 
 #endif

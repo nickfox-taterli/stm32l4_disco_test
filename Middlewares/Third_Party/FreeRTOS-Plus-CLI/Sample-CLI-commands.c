@@ -93,7 +93,7 @@
 #endif
 
 #ifndef configINCLUDE_QUERY_HEAP_COMMAND
-	#define configINCLUDE_QUERY_HEAP_COMMAND 0
+	#define configINCLUDE_QUERY_HEAP_COMMAND 1
 #endif
 
 /*

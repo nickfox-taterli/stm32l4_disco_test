@@ -139,8 +139,8 @@ void SAI1_Play(uint8_t *pData,
 
     }
 
-		SAI1_Block_A->CR1 = 0x00002280 | (Mckdiv << 20) | SAI_Mono_Stereo_Mode;
-		
+    SAI1_Block_A->CR1 = 0x00002280 | (Mckdiv << 20) | SAI_Mono_Stereo_Mode;
+
     LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
 
     LL_DMA_ClearFlag_TE1(DMA2);
@@ -167,12 +167,22 @@ void SAI1_Play(uint8_t *pData,
 
 }
 
-void SAI1_Stop(void){
+void SAI1_Stop(void)
+{
+
+
+    SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
+
     LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
+    LL_DMA_ClearFlag_TE1(DMA2);
+    LL_DMA_ClearFlag_HT1(DMA2);
+    LL_DMA_ClearFlag_TC1(DMA2);
+    LL_DMA_ClearFlag_GI1(DMA2);
+
+    LL_DMA_DisableIT_TE(DMA2, LL_DMA_CHANNEL_1);
+    LL_DMA_DisableIT_HT(DMA2, LL_DMA_CHANNEL_1);
+    LL_DMA_DisableIT_TC(DMA2, LL_DMA_CHANNEL_1);
 
     SAI1_Block_A->CR1 &= ~SAI_xCR1_SAIEN;
-    SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
-	
-	LL_RCC_PLLSAI1_Disable();
-	LL_RCC_PLLSAI1_DisableDomain_SAI();	
+
 }
