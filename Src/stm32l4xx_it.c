@@ -194,7 +194,6 @@ void DMA2_Channel7_IRQHandler(void)
 }
 
 /* DMA2_CH1 - REQUEST 1 => SAI */
-extern int32_t UpdatePointer;
 void DMA2_Channel1_IRQHandler(void)
 {
     if(LL_DMA_GetPeriphRequest(DMA2, LL_DMA_CHANNEL_1) == LL_DMA_REQUEST_1)
@@ -202,7 +201,6 @@ void DMA2_Channel1_IRQHandler(void)
         if(LL_DMA_IsActiveFlag_TC1(DMA2))
         {
             LL_DMA_ClearFlag_TC1(DMA2);
-					        UpdatePointer = 2048;
 
             /* Call function Transmission complete Callback */
 
@@ -210,7 +208,6 @@ void DMA2_Channel1_IRQHandler(void)
         if(LL_DMA_IsActiveFlag_HT1(DMA2))
         {
             LL_DMA_ClearFlag_HT1(DMA2);
-					        UpdatePointer = 0;
 
             /* Call function Transmission complete Callback */
         }
@@ -222,6 +219,36 @@ void DMA2_Channel1_IRQHandler(void)
     }
     LL_DMA_ClearFlag_GI1(DMA2);
 }
+extern uint32_t DmaRecHalfBuffCplt;
+extern uint32_t DmaRecBuffCplt;
+void DMA1_Channel4_IRQHandler(void)
+{
+    if(LL_DMA_GetPeriphRequest(DMA1, LL_DMA_CHANNEL_4) == LL_DMA_REQUEST_0)
+    {
+        if(LL_DMA_IsActiveFlag_TC4(DMA1))
+        {
+            LL_DMA_ClearFlag_TC4(DMA1);
+					    DmaRecBuffCplt = 1;
+
+            /* Call function Transmission complete Callback */
+
+        }
+        if(LL_DMA_IsActiveFlag_HT4(DMA1))
+        {
+            LL_DMA_ClearFlag_HT4(DMA1);
+					     DmaRecHalfBuffCplt = 1;
+
+            /* Call function Transmission complete Callback */
+        }
+        else if(LL_DMA_IsActiveFlag_TE4(DMA1))
+        {
+            LL_DMA_ClearFlag_TE4(DMA1);
+            /* Call Error function */
+        }
+    }
+    LL_DMA_ClearFlag_GI4(DMA1);
+}
+
 
 /******************************************************************************/
 /* STM32L4xx Peripheral Interrupt Handlers                                    */
