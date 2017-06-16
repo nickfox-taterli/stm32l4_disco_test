@@ -23,8 +23,9 @@
 
 - [x] QSPI DMA [N25Q128] 驱动
 - [x] SAI DMA [CS43L22] 驱动 (192K/96K/48K/32K/16K/8K)
-- [ ] SAI DMA [CS43L22] 驱动 (44K/22K/11K)
-- [ ] DFSDM 驱动
+- [x] SAI DMA [CS43L22] 驱动 (44K/22K/11K)
+- [x] DFSDM 驱动
+- [x] FreeRTOS CLI
 - [ ] 其他板载传感器
 - [ ] 其他...
 
