@@ -7,6 +7,10 @@ void DFSDM_Init(uint32_t *pData,
 {
     uint8_t *pBuffPtr = (uint8_t *)pData;
 
+    uint32_t fltfcr;
+    uint32_t chcfgr1;
+    uint32_t chcfgr2;
+
     LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOE);
     LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_DFSDM1);
 
@@ -41,10 +45,66 @@ void DFSDM_Init(uint32_t *pData,
         LL_RCC_PLLSAI1_EnableDomain_SAI();
         LL_RCC_PLLSAI1_Enable();
     }
+    /* Fillter Table */
+    if(AudioFrequency == SAI_AUDIO_FREQUENCY_8K)
+    {
+        fltfcr = 0x60FF0000;
+        chcfgr1 = 0xC0170000;
+        chcfgr2 = 0x00000030;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_11K)
+    {
+        fltfcr = 0x60FF0000;
+        chcfgr1 = 0xC0030000;
+        chcfgr2 = 0x00000030;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_16K)
+    {
+        fltfcr = 0x607F0000;
+        chcfgr1 = 0xC0170000;
+        chcfgr2 = 0x00000018;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_22K)
+    {
+        fltfcr = 0x607F0000;
+        chcfgr1 = 0xC0030000;
+        chcfgr2 = 0x00000018;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_32K)
+    {
+        fltfcr = 0x803F0000;
+        chcfgr1 = 0xC0170000;
+        chcfgr2 = 0x00000030;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_44K)
+    {
+        fltfcr = 0x603F0000;
+        chcfgr1 = 0xC0030000;
+        chcfgr2 = 0x00000000;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_48K)
+    {
+        fltfcr = 0x801F0000;
+        chcfgr1 = 0xC01F0000;
+        chcfgr2 = 0x00000010;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_96K)
+    {
+        fltfcr = 0xA00F0000;
+        chcfgr1 = 0xC01F0000;
+        chcfgr2 = 0x00000010;
+    }
+    else if(AudioFrequency == SAI_AUDIO_FREQUENCY_192K)
+    {
+        fltfcr = 0xA00F0000;
+        chcfgr1 = 0xC01F0000;
+        chcfgr2 = 0x00000000;
+    }
 
-    DFSDM1_Channel0->CHCFGR1 = 0xC0000000 | (uint32_t) ((DFSDMClockDivider(AudioFrequency) - 1) << 16);
+    DFSDM1_Channel0->CHCFGR1 = chcfgr1;
     DFSDM1_Channel2->CHCFGR1 = 0x00000004;
-    DFSDM1_Channel2->CHCFGR2 = (DFSDMRightBitShift(AudioFrequency) << 3);
+
+    DFSDM1_Channel2->CHCFGR2 = chcfgr2;
     DFSDM1_Channel2->CHAWSCDR = 0x00090000;
     DFSDM1_Channel2->CHCFGR1 |= DFSDM_CHCFGR1_CHEN;
 
@@ -63,7 +123,7 @@ void DFSDM_Init(uint32_t *pData,
     LL_DMA_ClearFlag_TC4(DMA1);
     LL_DMA_ClearFlag_GI4(DMA1);
 
-    DFSDM1_Filter0->FLTFCR = (DFSDMFilterOrder(AudioFrequency)) | ((DFSDMOverSampling(AudioFrequency) - 1) << 16);
+    DFSDM1_Filter0->FLTFCR = fltfcr;
     DFSDM1_Filter0->FLTCR1 = 0x22240011;
 
     LL_DMA_ClearFlag_TE4(DMA1);

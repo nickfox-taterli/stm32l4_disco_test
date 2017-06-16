@@ -31,7 +31,7 @@ void StartDefaultTask(void)
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
     BSP_QSPI_EnableMemoryMappedMode();
-    DFSDM_Init(RecBuff, 2048, SAI_AUDIO_FREQUENCY_44K);
+    DFSDM_Init((uint32_t *)RecBuff, 2048, SAI_AUDIO_FREQUENCY_44K);
     CS43L22_Init(70);
     CS43L22_Play((uint8_t *)PlayBuff, 2048, SAI_AUDIO_FREQUENCY_44K, SAI_MONOMODE);
     for(;;)
