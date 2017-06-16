@@ -56,7 +56,8 @@ void SAI1_MspInit(void)
 
 void SAI1_Play(uint8_t *pData,
                uint16_t PlayBufSize,
-               uint32_t AudioFrequency)
+               uint32_t AudioFrequency,
+               uint32_t SAI_Mono_Stereo_Mode)
 {
 
     uint16_t Mckdiv = 0;
@@ -138,8 +139,8 @@ void SAI1_Play(uint8_t *pData,
 
     }
 
-    SAI1_Block_A->CR1 = 0x00002280 | (Mckdiv << 20);
-
+		SAI1_Block_A->CR1 = 0x00002280 | (Mckdiv << 20) | SAI_Mono_Stereo_Mode;
+		
     LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_1);
 
     LL_DMA_ClearFlag_TE1(DMA2);
@@ -171,4 +172,7 @@ void SAI1_Stop(void){
 
     SAI1_Block_A->CR1 &= ~SAI_xCR1_SAIEN;
     SAI1_Block_A->CR1 &= ~SAI_xCR1_DMAEN;
+	
+	LL_RCC_PLLSAI1_Disable();
+	LL_RCC_PLLSAI1_DisableDomain_SAI();	
 }

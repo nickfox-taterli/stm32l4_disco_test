@@ -1,6 +1,7 @@
 #include "stm32l4xx.h"
 
 #include "FreeRTOS.h"
+#include "FreeRTOS_CLI.h"
 #include "task.h"
 #include "timers.h"
 #include "queue.h"
@@ -25,36 +26,14 @@ uint16_t PlayBuff[4096];
 __IO int32_t UpdatePointer = -1;
 uint32_t PlaybackPosition = PLAY_BUFF_SIZE;
 
-void DMA2_Channel1_IRQHandler(void)
-{
-    if(LL_DMA_IsActiveFlag_TC1(DMA2))
-    {
-        LL_DMA_ClearFlag_TC1(DMA2);
-        UpdatePointer = PLAY_BUFF_SIZE / 2;
-        /* Call function Transmission complete Callback */ /* 传输完剩下一半,这时候可以填充后面的数据. */
-
-    }
-    if(LL_DMA_IsActiveFlag_HT1(DMA2))
-    {
-        LL_DMA_ClearFlag_HT1(DMA2);
-        UpdatePointer = 0;
-        /* Call function Transmission complete Callback */ /* 传输完前面一半,这时候可以填充前面的数据. */
-    }
-    else if(LL_DMA_IsActiveFlag_TE1(DMA2))
-    {
-        /* Call Error function */
-    }
-
-    LL_DMA_ClearFlag_GI1(DMA2);
-}
-
 void StartDefaultTask(void)
 {
     BSP_QSPI_Init();
     BSP_QSPI_RDID(&pID); /* N25Q128 has unique id. */
     BSP_QSPI_EnableMemoryMappedMode();
     cs43l22_id = CS43L22_Init(70);
-    CS43L22_Play((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_44K);
+    //CS43L22_Play((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_8K,SAI_STEREOMODE);
+    CS43L22_Play((uint8_t *)PlayBuff, 4096, SAI_AUDIO_FREQUENCY_8K, SAI_MONOMODE);
     for(;;)
     {
         /* Wait a callback event */
@@ -78,7 +57,7 @@ void StartDefaultTask(void)
 
         if(UpdatePointer != -1)
         {
-						vTaskDelay(1);/* Error */
+            vTaskDelay(1);/* Error */
         }
     }
 }
@@ -87,7 +66,8 @@ int main(void)
 {
 
     SystemClock_Config();
-
+    vRegisterSampleCLICommands();
+    vUARTCommandConsoleStart(1000, 0);
     xTaskCreate((TaskFunction_t)StartDefaultTask, "StartDefaultTask", 128, NULL, 0, NULL);
 
     vTaskStartScheduler();

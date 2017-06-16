@@ -118,7 +118,8 @@ uint8_t CS43L22_ReadID(void)
   */
 void CS43L22_Play(uint8_t *pData,
                   uint16_t PlayBufSize,
-                  uint32_t AudioFrequency)
+                  uint32_t AudioFrequency,
+									uint32_t SAI_Mono_Stereo_Mode)
 {
 
     if(Is_CS43L22_Stop == 1)
@@ -134,7 +135,7 @@ void CS43L22_Play(uint8_t *pData,
         /* Power on the Codec */
         I2C1_Master_Write(0x94, CS43L22_REG_POWER_CTL1, 0x9E);
 
-        SAI1_Play(pData, PlayBufSize, AudioFrequency);
+        SAI1_Play(pData, PlayBufSize, AudioFrequency,SAI_Mono_Stereo_Mode);
 
         Is_CS43L22_Stop = 0;
     }

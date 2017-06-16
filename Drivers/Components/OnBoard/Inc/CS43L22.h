@@ -30,6 +30,8 @@
 #include "stm32l4xx_ll_usart.h"
 #include "stm32l4xx_ll_wwdg.h"
 
+#include "SAI1.h" /* For Mono Mode Select */
+
 /** @addtogroup BSP
   * @{
   */
@@ -183,7 +185,7 @@
 uint8_t  CS43L22_Init(uint8_t Volume);
 void		 CS43L22_SetVolume(uint8_t Volume);
 uint8_t  CS43L22_ReadID(void);
-void CS43L22_Play(uint8_t *pData, uint16_t PlayBufSize, uint32_t AudioFrequency);
+void CS43L22_Play(uint8_t *pData, uint16_t PlayBufSize, uint32_t AudioFrequency,uint32_t SAI_Mono_Stereo_Mode);
 void 		 CS43L22_Pause(void);
 void 		 CS43L22_Resume(void);
 void 		 CS43L22_Stop(void);

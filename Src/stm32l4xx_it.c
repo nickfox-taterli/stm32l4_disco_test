@@ -166,33 +166,63 @@ void DebugMon_Handler(void)
     /* USER CODE END DebugMonitor_IRQn 1 */
 }
 
+/* DMA2_CH7 - REQUEST 3 => QSPI */
 void DMA2_Channel7_IRQHandler(void)
 {
-    static BaseType_t xHigherPriorityTaskWoken;
-    xHigherPriorityTaskWoken = pdFALSE;
-
-    if(LL_DMA_IsActiveFlag_TC7(DMA2) && LL_DMA_IsEnabledIT_TC(DMA2, LL_DMA_CHANNEL_7))
+    if(LL_DMA_GetPeriphRequest(DMA2, LL_DMA_CHANNEL_7) == LL_DMA_REQUEST_3)
     {
-        LL_DMA_ClearFlag_TC7(DMA2);
-        LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
+        if(LL_DMA_IsActiveFlag_TC7(DMA2) && LL_DMA_IsEnabledIT_TC(DMA2, LL_DMA_CHANNEL_7))
+        {
+            LL_DMA_ClearFlag_TC7(DMA2);
+            LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
 
-        /* 此处执行中断回传. */
+            /* 此处执行中断回传. */
+        }
+        if(LL_DMA_IsActiveFlag_HT7(DMA2) && LL_DMA_IsEnabledIT_HT(DMA2, LL_DMA_CHANNEL_7))
+        {
+            LL_DMA_ClearFlag_HT7(DMA2);
+            /* 此处执行中断回传. */
+        }
+        if(LL_DMA_IsActiveFlag_TE7(DMA2) && LL_DMA_IsEnabledIT_TE(DMA2, LL_DMA_CHANNEL_7))
+        {
+            LL_DMA_ClearFlag_TE7(DMA2);
+            LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
+            /* 此处执行中断回传. */
+        }
     }
-    if(LL_DMA_IsActiveFlag_HT7(DMA2) && LL_DMA_IsEnabledIT_HT(DMA2, LL_DMA_CHANNEL_7))
-    {
-        LL_DMA_ClearFlag_HT7(DMA2);
-        /* 此处执行中断回传. */
-    }
-    if(LL_DMA_IsActiveFlag_TE7(DMA2) && LL_DMA_IsEnabledIT_TE(DMA2, LL_DMA_CHANNEL_7))
-    {
-        LL_DMA_ClearFlag_TE7(DMA2);
-        LL_DMA_DisableChannel(DMA2, LL_DMA_CHANNEL_7);
-        /* 此处执行中断回传. */
-    }
-
-    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
-
+    LL_DMA_ClearFlag_GI7(DMA2);
 }
+
+/* DMA2_CH1 - REQUEST 1 => SAI */
+extern int32_t UpdatePointer;
+void DMA2_Channel1_IRQHandler(void)
+{
+    if(LL_DMA_GetPeriphRequest(DMA2, LL_DMA_CHANNEL_1) == LL_DMA_REQUEST_1)
+    {
+        if(LL_DMA_IsActiveFlag_TC1(DMA2))
+        {
+            LL_DMA_ClearFlag_TC1(DMA2);
+					        UpdatePointer = 2048;
+
+            /* Call function Transmission complete Callback */
+
+        }
+        if(LL_DMA_IsActiveFlag_HT1(DMA2))
+        {
+            LL_DMA_ClearFlag_HT1(DMA2);
+					        UpdatePointer = 0;
+
+            /* Call function Transmission complete Callback */
+        }
+        else if(LL_DMA_IsActiveFlag_TE1(DMA2))
+        {
+            LL_DMA_ClearFlag_TE1(DMA2);
+            /* Call Error function */
+        }
+    }
+    LL_DMA_ClearFlag_GI1(DMA2);
+}
+
 /******************************************************************************/
 /* STM32L4xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */
