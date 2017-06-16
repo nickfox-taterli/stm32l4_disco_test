@@ -20,6 +20,7 @@ int main(void)
     vUARTCommandConsoleStart(1000, 0);
 
 		Audio_PlayBack_Init();
+		CPU_Usage_Init();
 	
     vTaskStartScheduler();
 

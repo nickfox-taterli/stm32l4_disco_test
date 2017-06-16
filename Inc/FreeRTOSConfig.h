@@ -70,6 +70,8 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#include "CPU_Usage.h"
+
 /*-----------------------------------------------------------
  * Application specific definitions.
  *
@@ -97,11 +99,11 @@
 #define configSUPPORT_STATIC_ALLOCATION          0
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
 #define configUSE_IDLE_HOOK                      0
-#define configUSE_TICK_HOOK                      0
+#define configUSE_TICK_HOOK                      1
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
-#define configMINIMAL_STACK_SIZE                 ((uint16_t)128)
+#define configMINIMAL_STACK_SIZE                 ((uint16_t)64)
 #define configTOTAL_HEAP_SIZE                    ((size_t)20 * 1024)
 #define configMAX_TASK_NAME_LEN                  ( 16 )
 #define configUSE_16_BIT_TICKS                   0
@@ -110,7 +112,14 @@
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION  1
 
 #define configUSE_TRACE_FACILITY 1
+#define configGENERATE_RUN_TIME_STATS 1
 #define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() 
+#define portGET_RUN_TIME_COUNTER_VALUE() xTaskGetTickCount()
+
+#define traceTASK_SWITCHED_IN()  trace_StartIdleMonitor()
+#define traceTASK_SWITCHED_OUT() trace_EndIdleMonitor()
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0
@@ -126,6 +135,8 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelayUntil             0
 #define INCLUDE_vTaskDelay                  1
 #define INCLUDE_xTaskGetSchedulerState      1
+#define INCLUDE_uxTaskGetStackHighWaterMark 1
+#define INCLUDE_xTaskGetIdleTaskHandle			1
 
 /* Cortex-M specific definitions. */
 #ifdef __NVIC_PRIO_BITS

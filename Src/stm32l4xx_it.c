@@ -252,7 +252,6 @@ void DMA1_Channel4_IRQHandler(void)
 
 }
 
-
 /******************************************************************************/
 /* STM32L4xx Peripheral Interrupt Handlers                                    */
 /* Add here the Interrupt Handlers for the used peripherals.                  */

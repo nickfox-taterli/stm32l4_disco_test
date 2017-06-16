@@ -102,7 +102,7 @@ static BaseType_t prvStartStopPlayBackCommand( char *pcWriteBuffer, size_t xWrit
     }
     else
     {
-        sprintf( pcWriteBuffer, "Valid parameters are 'start' and 'stop'.\r\n" );
+        sprintf( pcWriteBuffer, "Valid parameters are 'start' and 'stop' and 'free'.\r\n" );
     }
 
     /* There is no more data to return after this single string, so return
@@ -110,13 +110,17 @@ static BaseType_t prvStartStopPlayBackCommand( char *pcWriteBuffer, size_t xWrit
     return pdFALSE;
 }
 
+
 void Aduio_PlayBack_Exec(void)
 {
+		/* 目前只 */
     DFSDM_Init();
     CS43L22_Init(70);
     DmaRecBuffCplt = xSemaphoreCreateBinary();
     DmaRecHalfBuffCplt = xSemaphoreCreateBinary();
+	
     vTaskSuspend(NULL);
+	
     for(;;)
     {
         if( xSemaphoreTake( DmaRecHalfBuffCplt, portMAX_DELAY ) == pdTRUE )
@@ -140,5 +144,5 @@ void Aduio_PlayBack_Exec(void)
 
 void Audio_PlayBack_Init(void){
 		FreeRTOS_CLIRegisterCommand( &xStartStopPlayBack );
-    xTaskCreate((TaskFunction_t)Aduio_PlayBack_Exec, "AudioPB", 128, NULL, 0, &PlayBackHandle);
+    xTaskCreate((TaskFunction_t)Aduio_PlayBack_Exec, "AudioPB", configMINIMAL_STACK_SIZE, NULL, 0, &PlayBackHandle);
 }

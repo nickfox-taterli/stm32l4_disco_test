@@ -201,7 +201,7 @@ void vRegisterSampleCLICommands( void )
 
 static BaseType_t prvTaskStatsCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 {
-const char *const pcHeader = "     State   Priority  Stack    #\r\n************************************************\r\n";
+const char *const pcHeader = "   State   Prio    Stack   #\r\n************************************************\r\n";
 BaseType_t xSpacePadding;
 
 	/* Remove compile time warnings about unused parameters, and check the
@@ -229,7 +229,7 @@ BaseType_t xSpacePadding;
 	}
 	strcpy( pcWriteBuffer, pcHeader );
 	vTaskList( pcWriteBuffer + strlen( pcHeader ) );
-
+	
 	/* There is no more data to return after this single string, so return
 	pdFALSE. */
 	return pdFALSE;
@@ -261,7 +261,7 @@ BaseType_t xSpacePadding;
 	
 	static BaseType_t prvRunTimeStatsCommand( char *pcWriteBuffer, size_t xWriteBufferLen, const char *pcCommandString )
 	{
-	const char * const pcHeader = "  Abs Time      % Time\r\n****************************************\r\n";
+	const char * const pcHeader = "   Call Times      % CPU\r\n****************************************\r\n";
 	BaseType_t xSpacePadding;
 
 		/* Remove compile time warnings about unused parameters, and check the
