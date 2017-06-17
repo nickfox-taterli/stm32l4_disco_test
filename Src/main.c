@@ -13,19 +13,17 @@
 
 #include "MEMS.h"
 
-uint8_t tmp = 0x00;
+uint8_t tmp[3];
 
 int main(void)
 {
 
     SystemClock_Config();
+    MEMS_SPI2_Init();
 
-    for(;;)
-    {
-        tmp = L3GD20_ReadID();
-        tmp = LSM303C_AccReadID();
-        tmp = 0x00;
-    }
+    tmp[0] = L3GD20_ReadID();
+    tmp[1] = LSM303C_AccReadID();
+    tmp[2] = LSM303C_MagReadID();
 
     vRegisterSampleCLICommands();
     vUARTCommandConsoleStart(1000, 0);

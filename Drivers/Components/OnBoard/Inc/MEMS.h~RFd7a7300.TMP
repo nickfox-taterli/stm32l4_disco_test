@@ -47,7 +47,7 @@
 #define L3GD20_OUT_Y_L_ADDR           0x2A  /* Output Register Y */
 #define L3GD20_OUT_Y_H_ADDR           0x2B  /* Output Register Y */
 #define L3GD20_OUT_Z_L_ADDR           0x2C  /* Output Register Z */
-#define L3GD20_OUT_Z_H_ADDR           0x2D  /* Output Register Z */
+#define L3GD20_OUT_Z_H_ADDR           0x2D  /* Output Register Z */ 
 #define L3GD20_FIFO_CTRL_REG_ADDR     0x2E  /* Fifo control Register */
 #define L3GD20_FIFO_SRC_REG_ADDR      0x2F  /* Fifo src Register */
 
@@ -68,7 +68,7 @@
 #define I_AM_L3GD20                 ((uint8_t)0xD4)
 #define I_AM_L3GD20_TR              ((uint8_t)0xD5)
 
-/** @defgroup Power_Mode_selection
+/** @defgroup Power_Mode_selection 
   * @{
   */
 #define L3GD20_MODE_POWERDOWN       ((uint8_t)0x00)
@@ -77,7 +77,7 @@
   * @}
   */
 
-/** @defgroup OutPut_DataRate_Selection
+/** @defgroup OutPut_DataRate_Selection 
   * @{
   */
 #define L3GD20_OUTPUT_DATARATE_1    ((uint8_t)0x00)
@@ -88,7 +88,7 @@
   * @}
   */
 
-/** @defgroup Axes_Selection
+/** @defgroup Axes_Selection 
   * @{
   */
 #define L3GD20_X_ENABLE            ((uint8_t)0x02)
@@ -100,7 +100,7 @@
   * @}
   */
 
-/** @defgroup Bandwidth_Selection
+/** @defgroup Bandwidth_Selection 
   * @{
   */
 #define L3GD20_BANDWIDTH_1         ((uint8_t)0x00)
@@ -111,18 +111,18 @@
   * @}
   */
 
-/** @defgroup Full_Scale_Selection
+/** @defgroup Full_Scale_Selection 
   * @{
   */
 #define L3GD20_FULLSCALE_250       ((uint8_t)0x00)
 #define L3GD20_FULLSCALE_500       ((uint8_t)0x10)
-#define L3GD20_FULLSCALE_2000      ((uint8_t)0x20)
+#define L3GD20_FULLSCALE_2000      ((uint8_t)0x20) 
 #define L3GD20_FULLSCALE_SELECTION ((uint8_t)0x30)
 /**
   * @}
   */
 
-/** @defgroup Full_Scale_Sensitivity
+/** @defgroup Full_Scale_Sensitivity 
   * @{
   */
 #define L3GD20_SENSITIVITY_250DPS  ((float)8.75f)         /*!< gyroscope sensitivity with 250 dps full scale [DPS/LSB]  */
@@ -132,82 +132,82 @@
   * @}
   */
 
-
-/** @defgroup Block_Data_Update
+  
+/** @defgroup Block_Data_Update 
   * @{
-  */
+  */  
 #define L3GD20_BlockDataUpdate_Continous   ((uint8_t)0x00)
 #define L3GD20_BlockDataUpdate_Single      ((uint8_t)0x80)
 /**
   * @}
   */
-
+  
 /** @defgroup Endian_Data_selection
   * @{
-  */
+  */  
 #define L3GD20_BLE_LSB                     ((uint8_t)0x00)
 #define L3GD20_BLE_MSB	                   ((uint8_t)0x40)
 /**
   * @}
   */
-
-/** @defgroup High_Pass_Filter_status
+  
+/** @defgroup High_Pass_Filter_status 
   * @{
-  */
+  */   
 #define L3GD20_HIGHPASSFILTER_DISABLE      ((uint8_t)0x00)
 #define L3GD20_HIGHPASSFILTER_ENABLE	     ((uint8_t)0x10)
 /**
   * @}
   */
 
-/** @defgroup INT1_INT2_selection
+/** @defgroup INT1_INT2_selection 
   * @{
-  */
+  */   
 #define L3GD20_INT1                        ((uint8_t)0x00)
 #define L3GD20_INT2                        ((uint8_t)0x01)
 /**
   * @}
   */
 
-/** @defgroup INT1_Interrupt_status
+/** @defgroup INT1_Interrupt_status 
   * @{
-  */
+  */   
 #define L3GD20_INT1INTERRUPT_DISABLE       ((uint8_t)0x00)
 #define L3GD20_INT1INTERRUPT_ENABLE        ((uint8_t)0x80)
 /**
   * @}
   */
 
-/** @defgroup INT2_Interrupt_status
+/** @defgroup INT2_Interrupt_status 
   * @{
-  */
+  */   
 #define L3GD20_INT2INTERRUPT_DISABLE       ((uint8_t)0x00)
 #define L3GD20_INT2INTERRUPT_ENABLE        ((uint8_t)0x08)
 /**
   * @}
   */
 
-/** @defgroup INT1_Interrupt_ActiveEdge
+/** @defgroup INT1_Interrupt_ActiveEdge 
   * @{
-  */
+  */   
 #define L3GD20_INT1INTERRUPT_LOW_EDGE      ((uint8_t)0x20)
 #define L3GD20_INT1INTERRUPT_HIGH_EDGE     ((uint8_t)0x00)
 /**
   * @}
   */
-
-/** @defgroup Boot_Mode_selection
+  
+/** @defgroup Boot_Mode_selection 
   * @{
   */
 #define L3GD20_BOOT_NORMALMODE             ((uint8_t)0x00)
 #define L3GD20_BOOT_REBOOTMEMORY           ((uint8_t)0x80)
 /**
   * @}
-  */
-
-/** @defgroup High_Pass_Filter_Mode
+  */  
+ 
+/** @defgroup High_Pass_Filter_Mode 
   * @{
-  */
+  */   
 #define L3GD20_HPM_NORMAL_MODE_RES         ((uint8_t)0x00)
 #define L3GD20_HPM_REF_SIGNAL              ((uint8_t)0x10)
 #define L3GD20_HPM_NORMAL_MODE             ((uint8_t)0x20)
@@ -216,9 +216,9 @@
   * @}
   */
 
-/** @defgroup High_Pass_CUT OFF_Frequency
+/** @defgroup High_Pass_CUT OFF_Frequency 
   * @{
-  */
+  */   
 #define L3GD20_HPFCF_0              0x00
 #define L3GD20_HPFCF_1              0x01
 #define L3GD20_HPFCF_2              0x02
@@ -246,14 +246,14 @@
 #define LSM303C_CTRL_REG4_A               0x23  /* Control register 4 acceleration */
 #define LSM303C_CTRL_REG5_A               0x24  /* Control register 5 acceleration */
 #define LSM303C_CTRL_REG6_A               0x25  /* Control register 6 acceleration */
-#define LSM303C_CTRL_REG7_A               0x26  /* Control register 6 acceleration */
+#define LSM303C_CTRL_REG7_A               0x26  /* Control register 6 acceleration */   
 #define LSM303C_STATUS_REG_A              0x27  /* Status register acceleration */
 #define LSM303C_OUT_X_L_A                 0x28  /* Output Register X acceleration */
 #define LSM303C_OUT_X_H_A                 0x29  /* Output Register X acceleration */
 #define LSM303C_OUT_Y_L_A                 0x2A  /* Output Register Y acceleration */
 #define LSM303C_OUT_Y_H_A                 0x2B  /* Output Register Y acceleration */
 #define LSM303C_OUT_Z_L_A                 0x2C  /* Output Register Z acceleration */
-#define LSM303C_OUT_Z_H_A                 0x2D  /* Output Register Z acceleration */
+#define LSM303C_OUT_Z_H_A                 0x2D  /* Output Register Z acceleration */ 
 #define LSM303C_FIFO_CTRL                 0x2E  /* Fifo control Register acceleration */
 #define LSM303C_FIFO_SRC                  0x2F  /* Fifo src Register acceleration */
 
@@ -262,7 +262,7 @@
 #define LSM303C_IG_THS_X1_A               0x32
 #define LSM303C_IG_THS_Y1_A               0x33
 #define LSM303C_IG_THS_Z1_A               0x34
-
+   
 #define LSM303C_IG_DUR1_A                 0x32
 #define LSM303C_INT1_DURATION_A           0x33  /* Interrupt 1 DURATION register acceleration */
 
@@ -284,7 +284,7 @@
 #define LSM303C_CTRL_REG2_M               0x21  /* Magnetic control register 2 */
 #define LSM303C_CTRL_REG3_M               0x22  /* Magnetic control register 3 */
 #define LSM303C_CTRL_REG4_M               0x23  /* Magnetic control register 4 */
-#define LSM303C_CTRL_REG5_M               0x24  /* Magnetic control register 5 */
+#define LSM303C_CTRL_REG5_M               0x24  /* Magnetic control register 5 */   
 
 #define LSM303C_STATUS_REG_M              0x27  /* Magnetic status register M  */
 
@@ -292,7 +292,7 @@
 #define LSM303C_OUT_X_H_M                 0x29  /* Output Register X magnetic field */
 #define LSM303C_OUT_Y_L_M                 0x2A  /* Output Register Y magnetic field */
 #define LSM303C_OUT_Y_H_M                 0x2B  /* Output Register Y magnetic field */
-#define LSM303C_OUT_Z_L_M                 0x2C  /* Output Register Z magnetic field */
+#define LSM303C_OUT_Z_L_M                 0x2C  /* Output Register Z magnetic field */ 
 #define LSM303C_OUT_Z_H_M                 0x2D  /* Output Register Z magnetic field */
 
 #define LSM303C_TEMP_OUT_L_M              0x2E  /* Temperature Register magnetic field */
@@ -301,8 +301,8 @@
 #define LSM303C_INT_CFG_M                 0x30  /* Axis interrupt configuration        */
 #define LSM303C_INT_SRC_M                 0x31  /* Axis interrupt source               */
 #define LSM303C_INT_THS_L_M               0x32  /* Interrupt threshold L               */
-#define LSM303C_INT_THS_H_M               0x33  /* Interrupt threshold M               */
-
+#define LSM303C_INT_THS_H_M               0x33  /* Interrupt threshold M               */ 
+     
 
 /******************************************************************************/
 /**************************** END REGISTER MAPPING  ***************************/
@@ -353,21 +353,21 @@
   * @}
   */
 
-/** @defgroup Communication_Mode
+/** @defgroup Communication_Mode 
   * @{
-  */
+  */ 
 #define  LSM303C_ACC_I2C_MODE          ((uint8_t) 0x02)
 #define  LSM303C_ACC_SPI_MODE          ((uint8_t) 0x01)
 /**
   * @}
   */
-
+    
 /** @defgroup Acc_Full_Scale_Selection
   * @{
   */
-#define LSM303C_ACC_FULLSCALE_2G            ((uint8_t)0x00)  /*!< ? g */
-#define LSM303C_ACC_FULLSCALE_4G            ((uint8_t)0x20)  /*!< ? g */
-#define LSM303C_ACC_FULLSCALE_8G            ((uint8_t)0x30)  /*!< ? g */
+#define LSM303C_ACC_FULLSCALE_2G            ((uint8_t)0x00)  /*!< Ѳ g */
+#define LSM303C_ACC_FULLSCALE_4G            ((uint8_t)0x20)  /*!< Ѵ g */
+#define LSM303C_ACC_FULLSCALE_8G            ((uint8_t)0x30)  /*!< Ѹ g */
 /**
   * @}
   */
@@ -385,25 +385,25 @@
 
 /** @defgroup Acc_Block_Data_Update
   * @{
-  */
+  */  
 #define LSM303C_ACC_BDU_CONTINUOUS   ((uint8_t)0x00) /*!< Continuos Update */
 #define LSM303C_ACC_BDU_MSBLSB       ((uint8_t)0x08) /*!< Single Update: output registers not updated until MSB and LSB reading */
 /**
   * @}
   */
-
+  
 /** @defgroup Acc_Endian_Data_selection
   * @{
-  */
+  */  
 #define LSM303C_ACC_BLE_LSB                 ((uint8_t)0x00) /*!< Little Endian: data LSB @ lower address */
 #define LSM303C_ACC_BLE_MSB                 ((uint8_t)0x40) /*!< Big Endian: data MSB @ lower address */
 /**
   * @}
   */
-
+  
 /** @defgroup Acc_High_Pass_Filter_Mode
   * @{
-  */
+  */   
 #define LSM303C_ACC_HPM_REF_SIGNAL          ((uint8_t)0x08)
 #define LSM303C_ACC_HPM_NORMAL_MODE         ((uint8_t)0x00)
 /**
@@ -412,7 +412,7 @@
 
 /** @defgroup Acc_High_Pass_CUT OFF_Frequency
   * @{
-  */
+  */   
 #define LSM303C_ACC_DFC1_ODRDIV50       ((uint8_t)0x00)
 #define LSM303C_ACC_DFC1_ODRDIV100      ((uint8_t)0x20)
 #define LSM303C_ACC_DFC1_ODRDIV9        ((uint8_t)0x40)
@@ -420,19 +420,19 @@
 /**
   * @}
   */
-
+    
 /** @defgroup Acc_High_Pass_Filter_status
   * @{
-  */
+  */   
 #define LSM303C_ACC_HPF_DISABLE         ((uint8_t)0x00)
 #define LSM303C_ACC_HPF_ENABLE          ((uint8_t)0x08)
 /**
   * @}
   */
-
+  
 /** @defgroup Acc_High_Pass_Filter_Click_status
   * @{
-  */
+  */   
 #define LSM303C_ACC_HPF_CLICK_DISABLE   ((uint8_t)0x00)
 #define LSM303C_ACC_HPF_CLICK_ENABLE    ((uint8_t)0x04)
 /**
@@ -441,14 +441,14 @@
 
 /** @defgroup Acc_High_Pass_Filter_HPI2S_status
   * @{
-  */
+  */   
 #define LSM303C_ACC_HPI2S_INT1_DISABLE  ((uint8_t)0x00)
 #define LSM303C_ACC_HPI2S_INT1_ENABLE	  ((uint8_t)0x01)
 #define LSM303C_ACC_HPI2S_INT2_DISABLE  ((uint8_t)0x00)
 #define LSM303C_ACC_HPI2S_INT2_ENABLE   ((uint8_t)0x02)
 /**
   * @}
-  */
+  */ 
 
 /** @defgroup Acc_Interrupt1_Configuration_definition
   * @{
@@ -462,8 +462,8 @@
 #define LSM303C_IT1_OVERRUN             ((uint8_t)0x02)
 /**
   * @}
-  */
-
+  */  
+ 
 /** @defgroup Acc_Interrupt2_Configuration_definition
   * @{
   */
@@ -475,11 +475,11 @@
 #define LSM303C_IT2_HLACTIVE            ((uint8_t)0x02)
 /**
   * @}
-  */
+  */ 
 
 /** @defgroup Acc_INT_Combination_Status
   * @{
-  */
+  */   
 #define LSM303C_OR_COMBINATION          ((uint8_t)0x00)  /*!< OR combination of enabled IRQs */
 #define LSM303C_AND_COMBINATION         ((uint8_t)0x80)  /*!< AND combination of enabled IRQs */
 #define LSM303C_MOV_RECOGNITION         ((uint8_t)0x40)  /*!< 6D movement recognition */
@@ -490,7 +490,7 @@
 
 /** @defgroup Acc_INT_Axes
   * @{
-  */
+  */   
 #define LSM303C_Z_HIGH                  ((uint8_t)0x20)  /*!< Z High enabled IRQs */
 #define LSM303C_Z_LOW                   ((uint8_t)0x10)  /*!< Z low enabled IRQs */
 #define LSM303C_Y_HIGH                  ((uint8_t)0x08)  /*!< Y High enabled IRQs */
@@ -500,10 +500,10 @@
 /**
   * @}
   */
-
+      
 /** @defgroup Acc_INT_Click
 * @{
-*/
+*/   
 #define LSM303C_Z_DOUBLE_CLICK          ((uint8_t)0x20)  /*!< Z double click IRQs */
 #define LSM303C_Z_SINGLE_CLICK          ((uint8_t)0x10)  /*!< Z single click IRQs */
 #define LSM303C_Y_DOUBLE_CLICK          ((uint8_t)0x08)  /*!< Y double click IRQs */
@@ -513,10 +513,10 @@
 /**
 * @}
 */
-
+  
 /** @defgroup Acc_INT1_Interrupt_status
   * @{
-  */
+  */   
 #define LSM303C_INT1INTERRUPT_DISABLE   ((uint8_t)0x00)
 #define LSM303C_INT1INTERRUPT_ENABLE    ((uint8_t)0x80)
 /**
@@ -525,7 +525,7 @@
 
 /** @defgroup Acc_INT1_Interrupt_ActiveEdge
   * @{
-  */
+  */   
 #define LSM303C_INT1INTERRUPT_LOW_EDGE  ((uint8_t)0x20)
 #define LSM303C_INT1INTERRUPT_HIGH_EDGE ((uint8_t)0x00)
 /**
@@ -534,7 +534,7 @@
 
 /** @defgroup Mag_Temperature_Sensor
   * @{
-  */
+  */ 
 #define LSM303C_MAG_TEMPSENSOR_ENABLE        ((uint8_t) 0x80)   /*!< Temp sensor Enable */
 #define LSM303C_MAG_TEMPSENSOR_DISABLE       ((uint8_t) 0x00)   /*!< Temp sensor Disable */
 /**
@@ -543,7 +543,7 @@
 
 /** @defgroup Mag_XY-axis_Operating_Mode
   * @{
-  */
+  */ 
 #define LSM303C_MAG_OM_XY_LOWPOWER           ((uint8_t) 0x00 << 5)
 #define LSM303C_MAG_OM_XY_MEDIUM             ((uint8_t) 0x01 << 5)
 #define LSM303C_MAG_OM_XY_HIGH               ((uint8_t) 0x02 << 5)
@@ -554,7 +554,7 @@
 
 /** @defgroup Mag_Data_Rate
   * @{
-  */
+  */ 
 #define LSM303C_MAG_ODR_0_625_HZ             ((uint8_t) 0x00 << 2)  /*!< Output Data Rate = 0.625 Hz */
 #define LSM303C_MAG_ODR_1_25_HZ              ((uint8_t) 0x01 << 2)  /*!< Output Data Rate = 1.25 Hz  */
 #define LSM303C_MAG_ODR_2_5_HZ               ((uint8_t) 0x02 << 2)  /*!< Output Data Rate = 2.5 Hz   */
@@ -569,61 +569,61 @@
 
 /** @defgroup Mag_Data_Rate
   * @{
-  */
-#define LMS303C_MAG_SELFTEST_DISABLE         ((uint8_t 0x00)
+  */ 
+#define LMS303C_MAG_SELFTEST_DISABLE         ((uint8_t 0x00)     
 #define LMS303C_MAG_SELFTEST_ENABLE          ((uint8_t 0x01)
 /**
   * @}
-  */
+  */ 
 
 /** @defgroup Mag_Full_Scale
   * @{
-  */
-#define LSM303C_MAG_FS_DEFAULT               ((uint8_t) 0x00 << 5)
-#define LSM303C_MAG_FS_16_GA                 ((uint8_t) 0x03 << 5)  /*!< Full scale = ?6 Gauss */
+  */ 
+#define LSM303C_MAG_FS_DEFAULT               ((uint8_t) 0x00 << 5)  
+#define LSM303C_MAG_FS_16_GA                 ((uint8_t) 0x03 << 5)  /*!< Full scale = ѱ6 Gauss */
 /**
   * @}
-  */
+  */ 
 
 /** @defgroup Mag_Reboot
   * @{
-  */
+  */ 
 #define LSM303C_MAG_REBOOT_DEFAULT           ((uint8_t) 0x00 << 3)
 #define LSM303C_MAG_REBOOT_ENABLE            ((uint8_t) 0x01 << 3)
 /**
   * @}
-  */
+  */ 
 
 /** @defgroup Mag_Soft_reset
   * @{
-  */
+  */ 
 #define LSM303C_MAG_SOFT_RESET_DEFAULT       ((uint8_t) 0x00 << 2)
 #define LSM303C_MAG_SOFT_RESET_ENABLE        ((uint8_t) 0x01 << 2)
 /**
   * @}
-  */
+  */ 
 
-/** @defgroup Mag_Communication_Mode
+/** @defgroup Mag_Communication_Mode 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_I2C_MODE                 ((uint8_t) 0x80)
 #define LSM303C_MAG_SPI_MODE                 ((uint8_t) 0x04)
 /**
   * @}
   */
 
-/** @defgroup Mag_Lowpower_mode_config
+/** @defgroup Mag_Lowpower_mode_config 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_CONFIG_NORMAL_MODE       ((uint8_t) 0x00)
 #define LSM303C_MAG_CONFIG_LOWPOWER_MODE     ((uint8_t) 0x20)
 /**
   * @}
-  */
+  */   
 
-/** @defgroup Mag_Operation_Mode
+/** @defgroup Mag_Operation_Mode 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_SELECTION_MODE           ((uint8_t) 0x03)
 #define LSM303C_MAG_CONTINUOUS_MODE          ((uint8_t) 0x00)
 #define LSM303C_MAG_SINGLE_MODE              ((uint8_t) 0x01)
@@ -633,34 +633,34 @@
   * @}
   */
 
-/** @defgroup Mag_Z-axis_Operation_Mode
+/** @defgroup Mag_Z-axis_Operation_Mode 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_OM_Z_LOWPOWER            ((uint8_t) 0x00 << 2)
 #define LSM303C_MAG_OM_Z_MEDIUM              ((uint8_t) 0x01 << 2)
 #define LSM303C_MAG_OM_Z_HIGH                ((uint8_t) 0x02 << 2)
-#define LSM303C_MAG_OM_Z_ULTRAHIGH           ((uint8_t) 0x03 << 2)
+#define LSM303C_MAG_OM_Z_ULTRAHIGH           ((uint8_t) 0x03 << 2)   
 /**
   * @}
-  */
+  */   
 
-/** @defgroup Mag_Big_little-endian_selection
+/** @defgroup Mag_Big_little-endian_selection 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_BLE_LSB                  ((uint8_t) 0x00)
 #define LSM303C_MAG_BLE_MSB                  ((uint8_t) 0x02)
 /**
   * @}
-  */
+  */   
 
-/** @defgroup Mag_Bloc_update_magnetic_data
+/** @defgroup Mag_Bloc_update_magnetic_data 
   * @{
-  */
+  */ 
 #define LSM303C_MAG_BDU_CONTINUOUS           ((uint8_t) 0x00)
 #define LSM303C_MAG_BDU_MSBLSB              ((uint8_t) 0x40)
 /**
   * @}
-  */
+  */      
 
 /**
  * @defgroup Magnetometer_Sensitivity
@@ -686,25 +686,25 @@
 
 /** @defgroup Mag_Working_Mode
   * @{
-  */
+  */ 
 #define LSM303C_CONTINUOUS_CONVERSION     ((uint8_t) 0x00)   /*!< Continuous-Conversion Mode */
 #define LSM303C_SINGLE_CONVERSION         ((uint8_t) 0x01)   /*!< Single-Conversion Mode */
-#define LSM303C_SLEEP                     ((uint8_t) 0x02)   /*!< Sleep Mode */
+#define LSM303C_SLEEP                     ((uint8_t) 0x02)   /*!< Sleep Mode */                       
 /**
   * @}
   */
-
+	
 /** @defgroup MAGNETO_Config_structure  Magnetometer Configuration structure
   * @{
   */
 typedef struct
 {
-    uint8_t Register1;
-    uint8_t Register2;
-    uint8_t Register3;
-    uint8_t Register4;
-    uint8_t Register5;
-} MAGNETO_InitTypeDef;
+  uint8_t Register1;
+  uint8_t Register2;
+  uint8_t Register3;
+  uint8_t Register4;
+  uint8_t Register5;
+}MAGNETO_InitTypeDef;	
 
 
 void MEMS_SPI2_Init(void);
@@ -730,7 +730,7 @@ uint8_t LSM303C_AccReadID(void);
 void    LSM303C_AccLowPower(uint16_t Mode);
 void    LSM303C_AccFilterConfig(uint8_t FilterStruct);
 void    LSM303C_AccFilterCmd(uint8_t HighPassFilterState);
-void    LSM303C_AccReadXYZ(int16_t *pData);
+void    LSM303C_AccReadXYZ(int16_t* pData);
 void    LSM303C_AccFilterClickCmd(uint8_t HighPassFilterClickState);
 void    LSM303C_AccIT1Enable(uint8_t LSM303C_IT);
 void    LSM303C_AccIT1Disable(uint8_t LSM303C_IT);
@@ -743,7 +743,7 @@ void    LSM303C_AccZClickITConfig(void);
 void    LSM303C_MagInit(MAGNETO_InitTypeDef LSM303C_InitStruct);
 uint8_t LSM303C_MagReadID(void);
 void    LSM303C_MagLowPower(uint16_t Mode);
-void    LSM303C_MagReadXYZ(int16_t *pData);
+void    LSM303C_MagReadXYZ(int16_t* pData);
 uint8_t LSM303C_MagGetDataStatus(void);
 
 #endif
