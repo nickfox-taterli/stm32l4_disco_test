@@ -36,6 +36,16 @@
 - [ ] MFX
 - [ ] 各种片内外设
 
+## 指令
+
+- [x] help:打印所有存在的指令.FreeRTOS自带.
+- [x] task-stats:查看任务状态,CLI肯定写R的,这是CLI自带的,然后修改过下.
+- [x] run-time-stats:统计哪个任务更占资源,目前CPU空闲都是99%
+- [x] query-heap:看看还有对少堆内存.
+- [x] playback:是否从DFSDM录音然后从CS43L22播放
+- [x] led:控制板载两个LED
+- [ ] 播放QSPI的音乐...
+
 ## 更多
 
 https://www.lijingquan.net

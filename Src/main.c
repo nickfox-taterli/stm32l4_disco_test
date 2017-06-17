@@ -55,7 +55,7 @@ void MEMS_Exec(void)
 				else
 					Alt_Value++;
 				
-				vTaskDelay(1);
+				vTaskDelay(100);
 				
     }
 }
