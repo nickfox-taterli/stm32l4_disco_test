@@ -68,7 +68,7 @@ static BaseType_t prvLEDControlCommand( char *pcWriteBuffer, size_t xWriteBuffer
         }
         else if( strncmp( pcParameter_on_or_off, "off", strlen( "off" ) ) == 0 )
         {
-            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3);
+            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2);
             sprintf( pcWriteBuffer, "Red LED Off.\r\n" );
         }
         else
