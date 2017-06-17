@@ -736,32 +736,18 @@ typedef struct
   uint8_t Interrupt_ActiveEdge;               /* Interrupt Active edge */
 }GYRO_InterruptConfigTypeDef;  
 
-/* ACCELERO struct */
-typedef struct
+/** @defgroup STM32L476G_DISCOVERY_GYROSCOPE_Exported_Types Exported Types
+  * @{
+  */
+typedef enum 
 {
-  uint8_t Power_Mode;                         /* Power-down/Normal Mode */
-  uint8_t AccOutput_DataRate;                 /* OUT data rate */
-  uint8_t Axes_Enable;                        /* Axes enable */
-  uint8_t High_Resolution;                    /* High Resolution enabling/disabling */
-  uint8_t BlockData_Update;                   /* Block Data Update */
-  uint8_t Endianness;                         /* Endian Data selection */
-  uint8_t AccFull_Scale;                      /* Full Scale selection */
-  uint8_t Communication_Mode;
-}ACCELERO_InitTypeDef;
-
-/* ACCELERO High Pass Filter struct */
-typedef struct
-{
-  uint8_t HighPassFilter_Mode_Selection;      /* Internal filter mode */
-  uint8_t HighPassFilter_CutOff_Frequency;    /* High pass filter cut-off frequency */
-  uint8_t HighPassFilter_AOI1;                /* HPF_enabling/disabling for AOI function on interrupt 1 */
-  uint8_t HighPassFilter_AOI2;                /* HPF_enabling/disabling for AOI function on interrupt 2 */
-  uint8_t HighPassFilter_Data_Sel;
-  uint8_t HighPassFilter_Stat;
-}ACCELERO_FilterConfigTypeDef;
+  GYRO_OK = 0,
+  GYRO_ERROR = 1,
+  GYRO_TIMEOUT = 2
+} 
+GYRO_StatusTypeDef;
 
 void    MEMS_SPI2_Init(void);
-void 		MEMS_Init(void);
 
 void    L3GD20_Init(uint16_t InitStruct);
 void    L3GD20_LowPower(uint16_t InitStruct);

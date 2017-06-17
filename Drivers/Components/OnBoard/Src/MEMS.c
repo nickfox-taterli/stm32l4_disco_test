@@ -247,6 +247,107 @@ void MEMS_SPI2_Init(void)
     GYRO_CS_HIGH();
 }
 
+void MEMS_Init(void){
+  uint16_t ctrl = 0x0000;
+	
+  GYRO_InitTypeDef L3GD20_InitStructure;
+  GYRO_FilterConfigTypeDef L3GD20_FilterStructure={0,0};
+	
+  ACCELERO_InitTypeDef LSM303C_InitStructure;
+  ACCELERO_FilterConfigTypeDef LSM303C_FilterStructure;
+  MAGNETO_InitTypeDef LSM303C_InitStructureMag;
+	
+	MEMS_SPI2_Init();
+	
+  if((L3GD20_ReadID() == I_AM_L3GD20))
+  {
+    /* Configure Mems : data rate, power mode, full scale and axes */
+    L3GD20_InitStructure.Power_Mode = L3GD20_MODE_ACTIVE;
+    L3GD20_InitStructure.Output_DataRate = L3GD20_OUTPUT_DATARATE_1;
+    L3GD20_InitStructure.Axes_Enable = L3GD20_AXES_ENABLE;
+    L3GD20_InitStructure.Band_Width = L3GD20_BANDWIDTH_4;
+    L3GD20_InitStructure.BlockData_Update = L3GD20_BlockDataUpdate_Continous;
+    L3GD20_InitStructure.Endianness = L3GD20_BLE_LSB;
+    L3GD20_InitStructure.Full_Scale = L3GD20_FULLSCALE_250; 
+
+    /* Configure MEMS: data rate, power mode, full scale and axes */
+    ctrl = (uint16_t) (L3GD20_InitStructure.Power_Mode | L3GD20_InitStructure.Output_DataRate | \
+                       L3GD20_InitStructure.Axes_Enable | L3GD20_InitStructure.Band_Width);
+
+    ctrl |= (uint16_t) ((L3GD20_InitStructure.BlockData_Update | L3GD20_InitStructure.Endianness | \
+                        L3GD20_InitStructure.Full_Scale) << 8);
+
+    /* Initialize component */
+		L3GD20_Init(ctrl);
+  
+    L3GD20_FilterStructure.HighPassFilter_Mode_Selection =L3GD20_HPM_NORMAL_MODE_RES;
+    L3GD20_FilterStructure.HighPassFilter_CutOff_Frequency = L3GD20_HPFCF_0;
+
+    ctrl = (uint8_t) ((L3GD20_FilterStructure.HighPassFilter_Mode_Selection |\
+                       L3GD20_FilterStructure.HighPassFilter_CutOff_Frequency));
+
+    /* Configure component filter */
+    L3GD20_FilterConfig(ctrl) ;
+  
+    /* Enable component filter */
+    L3GD20_FilterCmd(L3GD20_HIGHPASSFILTER_ENABLE);
+	
+	}else{
+		for(;;);
+	}
+
+  if(LSM303C_AccReadID() == LMS303C_ACC_ID)
+	{
+    /* MEMS configuration ------------------------------------------------------*/
+    /* Fill the COMPASS accelerometer structure */
+    LSM303C_InitStructure.AccOutput_DataRate = LSM303C_ACC_ODR_10_HZ;
+    LSM303C_InitStructure.Axes_Enable= LSM303C_ACC_AXES_ENABLE;
+    LSM303C_InitStructure.AccFull_Scale = LSM303C_ACC_FULLSCALE_2G;
+    LSM303C_InitStructure.BlockData_Update = LSM303C_ACC_BDU_CONTINUOUS;
+    LSM303C_InitStructure.High_Resolution = LSM303C_ACC_HR_DISABLE;
+    LSM303C_InitStructure.Communication_Mode = LSM303C_ACC_SPI_MODE;
+        
+    /* Configure MEMS: data rate, power mode, full scale and axes */
+    ctrl =  (LSM303C_InitStructure.High_Resolution | LSM303C_InitStructure.AccOutput_DataRate | \
+                       LSM303C_InitStructure.Axes_Enable | LSM303C_InitStructure.BlockData_Update);
+    
+    ctrl |= (LSM303C_InitStructure.AccFull_Scale | LSM303C_InitStructure.Communication_Mode) << 8;
+    
+    /* Configure the COMPASS accelerometer main parameters */
+    LSM303C_AccInit(ctrl);
+  
+    /* Fill the COMPASS accelerometer HPF structure */
+    LSM303C_FilterStructure.HighPassFilter_Mode_Selection = LSM303C_ACC_HPM_NORMAL_MODE;
+    LSM303C_FilterStructure.HighPassFilter_CutOff_Frequency = LSM303C_ACC_DFC1_ODRDIV50;
+    LSM303C_FilterStructure.HighPassFilter_Stat = LSM303C_ACC_HPI2S_INT1_DISABLE | LSM303C_ACC_HPI2S_INT2_DISABLE;
+    
+    /* Configure MEMS: mode, cutoff frequency, Filter status, Click, AOI1 and AOI2 */
+    ctrl = (uint8_t) (LSM303C_FilterStructure.HighPassFilter_Mode_Selection |\
+                      LSM303C_FilterStructure.HighPassFilter_CutOff_Frequency|\
+                      LSM303C_FilterStructure.HighPassFilter_Stat);
+
+    /* Configure the COMPASS accelerometer LPF main parameters */
+    LSM303C_AccFilterConfig(ctrl);
+  }else{
+		for(;;);
+	}  
+
+  if(LSM303C_MagReadID() == LMS303C_MAG_ID)
+	{
+    /* MEMS configuration ------------------------------------------------------*/
+    /* Fill the COMPASS magnetometer structure */
+    LSM303C_InitStructureMag.Register1 = LSM303C_MAG_TEMPSENSOR_DISABLE | LSM303C_MAG_OM_XY_ULTRAHIGH | LSM303C_MAG_ODR_40_HZ;
+    LSM303C_InitStructureMag.Register2 = LSM303C_MAG_FS_DEFAULT | LSM303C_MAG_REBOOT_DEFAULT | LSM303C_MAG_SOFT_RESET_DEFAULT;
+    LSM303C_InitStructureMag.Register3 = LSM303C_MAG_SPI_MODE | LSM303C_MAG_CONFIG_NORMAL_MODE | LSM303C_MAG_CONTINUOUS_MODE;
+    LSM303C_InitStructureMag.Register4 = LSM303C_MAG_OM_Z_ULTRAHIGH | LSM303C_MAG_BLE_LSB;
+    LSM303C_InitStructureMag.Register5 = LSM303C_MAG_BDU_CONTINUOUS;
+    /* Configure the COMPASS magnetometer main parameters */
+    LSM303C_MagInit(LSM303C_InitStructureMag);
+  }else{
+		for(;;);
+	} 
+}
+
 
 /**
   * @brief  Writes one byte to the GYRO.
@@ -827,3 +928,4 @@ void LSM303C_MagReadXYZ(int16_t *pData)
         }
     }
 }
+

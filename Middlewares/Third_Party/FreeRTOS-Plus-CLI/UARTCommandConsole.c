@@ -84,7 +84,7 @@
 #include "FreeRTOS_CLI.h"
 
 /* Demo application includes. */
-#include "USART2.h"
+#include "USART2_vPort.h"
 
 /* Dimensions the buffer into which input characters are placed. */
 #define cmdMAX_INPUT_SIZE		50

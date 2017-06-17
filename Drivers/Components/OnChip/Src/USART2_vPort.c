@@ -1,4 +1,4 @@
-#include "USART2.h"
+#include "USART2_vPort.h"
 
 static QueueHandle_t xRxedChars;
 static QueueHandle_t xCharsForTx;
