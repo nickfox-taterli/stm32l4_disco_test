@@ -4,7 +4,7 @@
 #define RtA 		57.324841f
 #define AtR    		0.0174533f
 #define Acc_G 		0.0011963f
-#define Gyro_G 		0.0610351f
+#define Gyro_G 		0.0010351f
 #define Gyro_Gr		0.0010653f
 #define FILTER_NUM 	20
 

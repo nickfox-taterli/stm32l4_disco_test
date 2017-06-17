@@ -12,7 +12,8 @@
 
 #include "MEMS.h"
 #include "IMU.h"
-#include "USART2_vUSR.h"
+#include "LED.h"
+#include "AudioPlayBack.h"
 
 #define BYTE0(dwTemp)       (*(uint8_t *)(&dwTemp))
 #define BYTE1(dwTemp)       (*((uint8_t *)(&dwTemp) + 1))
@@ -37,7 +38,6 @@ void MEMS_Exec(void)
 {
 
     MEMS_Init();
-    USART2_Init();
     while(1)
     {
         L3GD20_ReadXYZAngRate(Angle);
@@ -49,72 +49,14 @@ void MEMS_Exec(void)
 
         _cnt = 0;
         sum = 0;
-        Alt_Value++;
-
-
-
-        data_to_send[_cnt++] = 0xAA;
-        data_to_send[_cnt++] = 0xAA;
-        data_to_send[_cnt++] = 0x01;
-        data_to_send[_cnt++] = 0;
-
-        _temp = (int16_t)(Angle_IMU[0] * 100);
-        data_to_send[_cnt++] = BYTE1(_temp);
-        data_to_send[_cnt++] = BYTE0(_temp);
-        _temp = (int16_t)(Angle_IMU[1] * 100);
-        data_to_send[_cnt++] = BYTE1(_temp);
-        data_to_send[_cnt++] = BYTE0(_temp);
-        _temp = (int16_t)(Angle_IMU[2] * 100);
-        data_to_send[_cnt++] = BYTE1(_temp);
-        data_to_send[_cnt++] = BYTE0(_temp);
-        data_to_send[_cnt++] = BYTE3(Alt_Value);
-        data_to_send[_cnt++] = BYTE2(Alt_Value);
-        data_to_send[_cnt++] = BYTE1(Alt_Value);
-        data_to_send[_cnt++] = BYTE0(Alt_Value);
-
-        data_to_send[_cnt++] = 0xA0;
-
-        data_to_send[3] = _cnt - 4;
-
-        for(i = 0; i < _cnt; i++)
-            sum += data_to_send[i];
-        data_to_send[_cnt++] = sum;
-
-        USART2_SendBuf(data_to_send, _cnt);
-
-        _cnt = 0;
-        sum = 0;
-
-        data_to_send[_cnt++] = 0xAA;
-        data_to_send[_cnt++] = 0xAA;
-        data_to_send[_cnt++] = 0x02;
-        data_to_send[_cnt++] = 0;
-        data_to_send[_cnt++] = (AccX[0] >> 8) & 0xFF;
-        data_to_send[_cnt++] = AccX[0] & 0xFF;
-        data_to_send[_cnt++] = (AccX[1] >> 8) & 0xFF;
-        data_to_send[_cnt++] = AccX[1] & 0xFF;
-        data_to_send[_cnt++] = (AccX[2] >> 8) & 0xFF;;
-        data_to_send[_cnt++] = AccX[2] & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[0] >> 8) & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[0]) & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[1] >> 8) & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[1]) & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[2] >> 8) & 0xFF;
-        data_to_send[_cnt++] = ((int16_t)Angle[2]) & 0xFF;
-        data_to_send[_cnt++] = (MagX[0] >> 8) & 0xFF;
-        data_to_send[_cnt++] = (MagX[0]) & 0xFF;
-        data_to_send[_cnt++] = (MagX[1] >> 8) & 0xFF;
-        data_to_send[_cnt++] = (MagX[1]) & 0xFF;
-        data_to_send[_cnt++] = (MagX[2] >> 8) & 0xFF;
-        data_to_send[_cnt++] = (MagX[2]) & 0xFF;
-
-        data_to_send[3] = _cnt - 4;
-
-        for(i = 0; i < _cnt; i++)
-            sum += data_to_send[i];
-        data_to_send[_cnt++] = sum & 0xFF;
-        USART2_SendBuf(data_to_send, _cnt);
-        vTaskDelay(10);
+				
+				if(Alt_Value > 1000)
+					Alt_Value = 980;
+				else
+					Alt_Value++;
+				
+				vTaskDelay(1);
+				
     }
 }
 
@@ -123,13 +65,14 @@ int main(void)
 
     SystemClock_Config();
 
-    /*
-        vRegisterSampleCLICommands();
-        vUARTCommandConsoleStart(1000, 0);
-    		Audio_PlayBack_Init();
-    */
-
-    xTaskCreate((TaskFunction_t)MEMS_Exec, "AudioPB", 1024, NULL, 0, NULL);
+    
+		vRegisterSampleCLICommands();
+		vUARTCommandConsoleStart(1000, 0);
+		Audio_PlayBack_Init();
+		LED_Init();
+    
+    xTaskCreate((TaskFunction_t)MEMS_Exec, "MEMS_Exec", 1024, NULL, 0, NULL);
+	
     vTaskStartScheduler();
 
     while (1)

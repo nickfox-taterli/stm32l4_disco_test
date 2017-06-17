@@ -28,12 +28,12 @@
 - [x] DFSDM 驱动
 - [x] FreeRTOS CLI
 - [x] FreeRTOS CPU使用率统计
-- [ ] MEMS基本驱动
+- [x] MEMS基本驱动
 - [ ] 段式液晶
 - [ ] 按键
-- [ ] LED
+- [x] LED
 - [ ] USB HOST
-
+- [ ] MFX
 
 ## 更多
 
