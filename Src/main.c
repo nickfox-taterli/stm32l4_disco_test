@@ -11,17 +11,27 @@
 #include "RCC.h"
 #include "AudioPlayBack.h"
 
+#include "MEMS.h"
+
+uint8_t tmp = 0x00;
+
 int main(void)
 {
 
     SystemClock_Config();
 
+    for(;;)
+    {
+        tmp = L3GD20_ReadID();
+        tmp = LSM303C_AccReadID();
+        tmp = 0x00;
+    }
+
     vRegisterSampleCLICommands();
     vUARTCommandConsoleStart(1000, 0);
 
-		Audio_PlayBack_Init();
-		CPU_Usage_Init();
-	
+    Audio_PlayBack_Init();
+
     vTaskStartScheduler();
 
     while (1)

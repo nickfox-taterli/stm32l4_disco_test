@@ -70,8 +70,6 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#include "CPU_Usage.h"
-
 /*-----------------------------------------------------------
  * Application specific definitions.
  *
@@ -99,7 +97,7 @@
 #define configSUPPORT_STATIC_ALLOCATION          0
 #define configSUPPORT_DYNAMIC_ALLOCATION         1
 #define configUSE_IDLE_HOOK                      0
-#define configUSE_TICK_HOOK                      1
+#define configUSE_TICK_HOOK                      0
 #define configCPU_CLOCK_HZ                       ( SystemCoreClock )
 #define configTICK_RATE_HZ                       ((TickType_t)1000)
 #define configMAX_PRIORITIES                     ( 7 )
@@ -117,9 +115,6 @@
 
 #define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() 
 #define portGET_RUN_TIME_COUNTER_VALUE() xTaskGetTickCount()
-
-#define traceTASK_SWITCHED_IN()  trace_StartIdleMonitor()
-#define traceTASK_SWITCHED_OUT() trace_EndIdleMonitor()
 
 /* Co-routine definitions. */
 #define configUSE_CO_ROUTINES                    0

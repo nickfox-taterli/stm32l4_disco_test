@@ -26,8 +26,13 @@
 - [x] SAI DMA [CS43L22] 驱动 (44K/22K/11K)
 - [x] DFSDM 驱动
 - [x] FreeRTOS CLI
-- [ ] 其他板载传感器
-- [ ] 其他...
+- [x] FreeRTOS CPU使用率统计
+- [ ] MEMS基本驱动
+- [ ] 段式液晶
+- [ ] 按键
+- [ ] LED
+- [ ] USB HOST
+
 
 ## 更多
 
