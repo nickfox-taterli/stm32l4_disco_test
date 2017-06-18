@@ -11,6 +11,13 @@ void SystemClock_Config(void)
     }
     LL_PWR_SetRegulVoltageScaling(LL_PWR_REGU_VOLTAGE_SCALE1);
 
+    LL_RCC_LSI_Enable();
+
+    /* Wait till LSI is ready */
+    while(LL_RCC_LSI_IsReady() != 1)
+    {
+
+    }
     LL_RCC_MSI_Enable();
 
     /* Wait till MSI is ready */
@@ -24,6 +31,10 @@ void SystemClock_Config(void)
 
     LL_RCC_MSI_SetCalibTrimming(0);
 
+    LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSI);
+
+    LL_RCC_EnableRTC();
+
     LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_MSI, LL_RCC_PLLM_DIV_1, 40, LL_RCC_PLLR_DIV_2);
 
     LL_RCC_PLL_EnableDomain_SYS();
@@ -35,7 +46,6 @@ void SystemClock_Config(void)
     {
 
     }
-
     LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
 
     LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
