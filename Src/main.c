@@ -11,6 +11,7 @@
 #include "RCC.h"
 #include "N25Q128.h"
 #include "CS43L22.h"
+#include "AT24C256.h"
 #include "LED.h"
 
 typedef struct
@@ -35,24 +36,43 @@ SemaphoreHandle_t DmaPlayHalfBuffCplt;
 SemaphoreHandle_t DmaPlayBuffCplt;
 uint16_t PlayBuff[1024];
 
-void LCD_Exec(void)
+SemaphoreHandle_t I2C_Lock;
+
+void Play_Exec(void)
 {
     WAVE_FormatTypeDef WaveFormat;
     static uint32_t PlaybackPosition = 0;
 
-    CS43L22_Init(65);
+    if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+    {
+        CS43L22_Init(65);
+
+        xSemaphoreGive( I2C_Lock );
+    }
+
     BSP_QSPI_Read((uint8_t *)&WaveFormat, 0x00000000, sizeof(WaveFormat));
 
     DmaPlayBuffCplt = xSemaphoreCreateBinary();
     DmaPlayHalfBuffCplt = xSemaphoreCreateBinary();
 
+
     if(WaveFormat.NbrChannels == 1)
     {
-        CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_MONOMODE);
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_MONOMODE);
+
+            xSemaphoreGive( I2C_Lock );
+        }
     }
     else if(WaveFormat.NbrChannels == 2)
     {
-        CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_STEREOMODE);
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_STEREOMODE);
+
+            xSemaphoreGive( I2C_Lock );
+        }
     }
     else
     {
@@ -78,6 +98,42 @@ void LCD_Exec(void)
     }
 }
 
+uint8_t eeprom_val = 0;
+
+void EEPROM_Test(void)
+{
+    while(1)
+    {
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            EEPROM_Write(0, 0x55);
+            xSemaphoreGive( I2C_Lock );
+        }
+        vTaskDelay(100);
+
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            eeprom_val = EEPROM_Read(0);
+            xSemaphoreGive( I2C_Lock );
+        }
+        vTaskDelay(100);
+
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            EEPROM_Write(0, 0xAA);
+            xSemaphoreGive( I2C_Lock );
+        }
+        vTaskDelay(100);
+				
+        if(xSemaphoreTake( I2C_Lock, portMAX_DELAY ) == pdTRUE)
+        {
+            eeprom_val = EEPROM_Read(0);
+            xSemaphoreGive( I2C_Lock );
+        }
+        vTaskDelay(100);
+    }
+}
+
 int main(void)
 {
     SystemClock_Config();
@@ -86,8 +142,11 @@ int main(void)
     vUARTCommandConsoleStart(1000, 0);
     LED_Init();
     BSP_QSPI_Init();
+    AT24C256_Init();
 
-    xTaskCreate((TaskFunction_t)LCD_Exec, "LCD_Exec", 1024, NULL, 0, NULL);
+    I2C_Lock = xSemaphoreCreateMutex();
+    xTaskCreate((TaskFunction_t)EEPROM_Test, "EEPROM_Test", 1024, NULL, 0, NULL);
+    xTaskCreate((TaskFunction_t)Play_Exec, "Play_Exec", 1024, NULL, 0, NULL);
 
     vTaskStartScheduler();
 

@@ -37,7 +37,8 @@
 - [ ] 各种片内外设
 - [ ] 串口波特率自动识别
 - [x] 自动识别QSPI里面的WAV音乐	
-- [ ] EEPROM
+- [x] EEPROM
+- [x] FreeRTOS 互斥管理I2C
 
 ## 指令
 
