@@ -124,8 +124,6 @@ void CS43L22_Play(uint8_t *pData,
 
     if(Is_CS43L22_Stop == 1)
     {
-
-
         /* Enable the digital soft ramp */
         I2C1_Master_Write(0x94, CS43L22_REG_MISC_CTL, 0x06);
 

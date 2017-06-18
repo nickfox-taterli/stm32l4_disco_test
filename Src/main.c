@@ -9,120 +9,72 @@
 #include "event_groups.h"
 
 #include "RCC.h"
-
+#include "N25Q128.h"
+#include "CS43L22.h"
 #include "LED.h"
-#include "LCD.h"
-#include "AudioPlayBack.h"
 
-
-/**
-  * @brief converts a 32bit unsigned int into ASCII
-  * @caller several callers for display values
-  * @param Number digit to displays
-  *  p_tab values in array in ASCII
-  * @retval None
-  */
-void Convert_IntegerIntoChar(uint32_t number, uint16_t *p_tab)
+typedef struct
 {
-    uint16_t units = 0, tens = 0, hundreds = 0, thousands = 0, tenthousand = 0, hundredthousand = 0;
+    uint32_t ChunkID;       /* 0 */
+    uint32_t FileSize;      /* 4 */
+    uint32_t FileFormat;    /* 8 */
+    uint32_t SubChunk1ID;   /* 12 */
+    uint32_t SubChunk1Size; /* 16*/
+    uint16_t AudioFormat;   /* 20 */
+    uint16_t NbrChannels;   /* 22 */
+    uint32_t SampleRate;    /* 24 */
 
-    units = ((((number % 100000) % 10000) % 1000) % 100) % 10;
-    tens = (((((number - units) / 10) % 10000) % 1000) % 100) % 10;
-    hundreds = ((((number - tens - units) / 100) % 1000) % 100) % 10;
-    thousands = (((number - hundreds - tens - units) / 1000) % 100) % 10;
-    tenthousand = ((number - thousands - hundreds - tens - units) / 10000) % 10;
-    hundredthousand = ((number - tenthousand - thousands - hundreds - tens - units) / 100000);
+    uint32_t ByteRate;      /* 28 */
+    uint16_t BlockAlign;    /* 32 */
+    uint16_t BitPerSample;  /* 34 */
+    uint32_t SubChunk2ID;   /* 36 */
+    uint32_t SubChunk2Size; /* 40 */
+} WAVE_FormatTypeDef;
 
-    *(p_tab + 5) = units + 0x30;
-    *(p_tab + 4) = tens + 0x30;
-    *(p_tab + 3) = hundreds + 0x30;
-    *(p_tab + 2) = thousands + 0x30;
-    *(p_tab + 1) = tenthousand + 0x30;
-    *(p_tab + 0) = hundredthousand + 0x30;
-}
-
-static void Idd_Convert(uint32_t Value, uint16_t *DisplayString)
-{
-    uint32_t valuetoconvert = 0;
-    uint16_t SIprefix = 0;
-    uint8_t i = 0;
-    uint8_t unitindex = 4;
-    FlagStatus zerofilter = RESET;
-
-    if(Value < 100)
-    {
-        /* measured value is in nA & we want 1 digit after coma */
-        valuetoconvert = Value * 100;
-
-        /* measured value is in nA */
-        /* Add SI prefix information */
-        SIprefix = (uint16_t) 'n';
-    }
-    else if(Value < 100000)
-    {
-        /* measured value is in ? & we want 1 digit after coma */
-        valuetoconvert = Value / 10;
-        /* Add SI prefix information */
-        SIprefix = (uint16_t) 'u';
-    }
-    else
-    {
-        /* measured value is in mA & we want 1 digit after coma */
-        valuetoconvert = Value / 10000;
-
-        /* Add SI prefix information */
-        SIprefix = (uint16_t) 'm';
-    }
-
-    Convert_IntegerIntoChar(valuetoconvert, DisplayString);
-
-    /* reorder display string to have following template WXY.Z mA */
-    while(i < unitindex)
-    {
-        *(DisplayString + i) = *(DisplayString + 2 + i);
-
-        /* remove 0 in front of value */
-        if((*(DisplayString + i) == '0') && (zerofilter == RESET))
-        {
-            *(DisplayString + i) = (uint16_t) ' ';
-        }
-        else
-        {
-            zerofilter = SET;
-        }
-        i++;
-    }
-
-    /* Add SI prefix & ampere information */
-    *(DisplayString + (unitindex - 2)) |= DOT;
-
-    /* Add SI preficx & ampere information */
-    *(DisplayString + (unitindex)) = SIprefix;
-    *(DisplayString + (unitindex + 1)) = (uint16_t) 'A';
-}
+SemaphoreHandle_t DmaPlayHalfBuffCplt;
+SemaphoreHandle_t DmaPlayBuffCplt;
+uint16_t PlayBuff[1024];
 
 void LCD_Exec(void)
 {
-    uint16_t Str[6];
-    uint32_t Value = 0;
+    WAVE_FormatTypeDef WaveFormat;
+    static uint32_t PlaybackPosition = 0;
+
+    CS43L22_Init(65);
+    BSP_QSPI_Read((uint8_t *)&WaveFormat, 0x00000000, sizeof(WaveFormat));
+
+    DmaPlayBuffCplt = xSemaphoreCreateBinary();
+    DmaPlayHalfBuffCplt = xSemaphoreCreateBinary();
+
+    if(WaveFormat.NbrChannels == 1)
+    {
+        CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_MONOMODE);
+    }
+    else if(WaveFormat.NbrChannels == 2)
+    {
+        CS43L22_Play((uint8_t *)PlayBuff, 1024, WaveFormat.SampleRate, SAI_STEREOMODE);
+    }
+    else
+    {
+        vTaskSuspend(NULL);
+    }
+
     for(;;)
     {
-        if(Value < 100)
-            Idd_Convert(Value++, Str);
-        else if(Value < 100000)
+        if( xSemaphoreTake( DmaPlayHalfBuffCplt, portMAX_DELAY ) == pdTRUE )
         {
-            Idd_Convert(Value += 50, Str);
+            BSP_QSPI_Read((uint8_t *)PlayBuff, sizeof(WaveFormat) + PlaybackPosition, 1024);
+            PlaybackPosition += 1024;
         }
-        else if(Value < 500000000)
+        if( xSemaphoreTake( DmaPlayBuffCplt, portMAX_DELAY ) == pdTRUE )
         {
-            Idd_Convert(Value += 200, Str);
+            BSP_QSPI_Read((uint8_t *)&PlayBuff[512], sizeof(WaveFormat) + PlaybackPosition, 1024);
+            PlaybackPosition += 1024;
         }
-        else
+        if((PlaybackPosition + 1024) > (WaveFormat.FileSize - 8))
         {
-            Idd_Convert(Value = 0, Str);
+            PlaybackPosition = 0;
         }
-        LCD_GLASS_DisplayStrDeci(Str);
-        vTaskDelay(100);
     }
 }
 
@@ -132,9 +84,8 @@ int main(void)
 
     vRegisterSampleCLICommands();
     vUARTCommandConsoleStart(1000, 0);
-    Audio_PlayBack_Init();
     LED_Init();
-    LCD_Init();
+    BSP_QSPI_Init();
 
     xTaskCreate((TaskFunction_t)LCD_Exec, "LCD_Exec", 1024, NULL, 0, NULL);
 

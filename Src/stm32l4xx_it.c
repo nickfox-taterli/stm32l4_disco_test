@@ -71,9 +71,6 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-/* External variables --------------------------------------------------------*/
-#include "AudioPlayBack.h"
-
 /******************************************************************************/
 /*            Cortex-M4 Processor Interruption and Exception Handlers         */
 /******************************************************************************/
@@ -197,21 +194,24 @@ void DMA2_Channel7_IRQHandler(void)
 }
 
 /* DMA2_CH1 - REQUEST 1 => SAI */
+extern SemaphoreHandle_t DmaPlayHalfBuffCplt;
+extern SemaphoreHandle_t DmaPlayBuffCplt;
 void DMA2_Channel1_IRQHandler(void)
 {
+	    static BaseType_t xHigherPriorityTaskWoken;
     if(LL_DMA_GetPeriphRequest(DMA2, LL_DMA_CHANNEL_1) == LL_DMA_REQUEST_1)
     {
         if(LL_DMA_IsActiveFlag_TC1(DMA2))
         {
             LL_DMA_ClearFlag_TC1(DMA2);
-
+            xSemaphoreGiveFromISR( DmaPlayBuffCplt, &xHigherPriorityTaskWoken );
             /* Call function Transmission complete Callback */
 
         }
         if(LL_DMA_IsActiveFlag_HT1(DMA2))
         {
             LL_DMA_ClearFlag_HT1(DMA2);
-
+            xSemaphoreGiveFromISR( DmaPlayHalfBuffCplt, &xHigherPriorityTaskWoken );
             /* Call function Transmission complete Callback */
         }
         else if(LL_DMA_IsActiveFlag_TE1(DMA2))
@@ -221,6 +221,8 @@ void DMA2_Channel1_IRQHandler(void)
         }
         LL_DMA_ClearFlag_GI1(DMA2);
     }
+		
+    portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 
 }
 
@@ -234,13 +236,11 @@ void DMA1_Channel4_IRQHandler(void)
         if(LL_DMA_IsActiveFlag_TC4(DMA1))
         {
             LL_DMA_ClearFlag_TC4(DMA1);
-            xSemaphoreGiveFromISR( DmaRecBuffCplt, &xHigherPriorityTaskWoken );
 
         }
         if(LL_DMA_IsActiveFlag_HT4(DMA1))
         {
             LL_DMA_ClearFlag_HT4(DMA1);
-            xSemaphoreGiveFromISR( DmaRecHalfBuffCplt, &xHigherPriorityTaskWoken );
         }
         else if(LL_DMA_IsActiveFlag_TE4(DMA1))
         {

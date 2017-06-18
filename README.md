@@ -29,13 +29,15 @@
 - [x] FreeRTOS CLI
 - [x] FreeRTOS CPU使用率统计
 - [x] MEMS基本驱动
-- [ ] 段式液晶
+- [x] 段式液晶
 - [ ] 按键
 - [x] LED
 - [ ] USB HOST
 - [ ] MFX
 - [ ] 各种片内外设
 - [ ] 串口波特率自动识别
+- [x] 自动识别QSPI里面的WAV音乐	
+- [ ] EEPROM
 
 ## 指令
 
@@ -45,7 +47,6 @@
 - [x] query-heap:看看还有对少堆内存.
 - [x] playback:是否从DFSDM录音然后从CS43L22播放
 - [x] led:控制板载两个LED
-- [ ] 播放QSPI的音乐...
 
 ## 更多
 
